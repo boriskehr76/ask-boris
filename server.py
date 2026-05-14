@@ -69,4 +69,5 @@ Question: {question}"""
     })
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5000, host="127.0.0.1")
+    port = int(os.environ.get("PORT", 5000))
+    app.run(debug=False, port=port, host="0.0.0.0")
