@@ -57,7 +57,7 @@ Answer in the same language the question was asked in."""
 Question: {question}"""
 
     response = claude.messages.create(
-        model="claude-sonnet-4-5",
+        model=os.environ.get("ANTHROPIC_MODEL", "claude-sonnet-4-5"),
         max_tokens=1000,
         system=system,
         messages=[{"role": "user", "content": user_prompt}]
