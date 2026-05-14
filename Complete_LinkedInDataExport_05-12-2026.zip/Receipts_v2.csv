@@ -1,0 +1,9 @@
+First Name,Last Name,Billing Country,Postal Code,Transaction Made At,Payment Method Type,Invoice Number,Description,Tax Amount,Sub Total,Total Amount,Currency Code
+Boris,Kehr,se,16560,08/10/23 12:00 AM UTC,CREDIT_CARD,8800442023,Bundle of Career subscription with Group and LIL,70.0,349.99,349.99,SEK
+Boris,Kehr,se,16560,07/09/23 12:00 AM UTC,CREDIT_CARD,8713710633,Bundle of Career subscription with Group and LIL,35.0,175.0,175.0,SEK
+Boris,Kehr,se,16560,06/09/23 12:00 AM UTC,CREDIT_CARD,8379859346,Bundle of Career subscription with Group and LIL,35.0,175.0,175.0,SEK
+,,SE,16560,12/07/22 12:00 AM UTC,IOS,8147536733,Bundle of Career subscription with Group and LIL,0.0,0.0,0.0,SEK
+,,SE,16560,01/04/21 12:00 AM UTC,IOS,5999765603,Bundle of Job Seeker subscription and LIL,0.0,319.0,319.0,SEK
+,,SE,16560,12/04/20 12:00 AM UTC,IOS,5920335843,Bundle of Job Seeker subscription and LIL,0.0,0.0,0.0,SEK
+Boris,Kehr,SE,,03/09/26 07:54 AM UTC,IOS,789214401238,Premium Business,0.00,0.00,0.00,SEK
+Boris,Kehr,SE,,08/21/24 10:58 AM UTC,IOS,78924280179,Premium Career,0.00,0.00,0.00,SEK
