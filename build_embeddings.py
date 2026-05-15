@@ -3,7 +3,7 @@ import chromadb
 from sentence_transformers import SentenceTransformer
 
 # Load corpus
-with open("corpus.json", encoding="utf-8") as f:
+with open("corpus_translated.json", encoding="utf-8") as f:
     corpus = json.load(f)
 
 # Load embedding model (downloads ~90MB on first run)
