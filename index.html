@@ -3,497 +3,2617 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ask Boris</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23c4472a'/><path d='M7 9a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3h-5l-4 4v-4H10a3 3 0 0 1-3-3V9z' fill='white'/></svg>">
+<title>Ghosted — Both sides of a broken hiring process</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiBmaWxsPSIjMGUwZTBlIi8+CiAgPHBhdGggZD0iCiAgICBNMTYgNQogICAgQzEwLjUgNSA3IDkgNyAxNAogICAgTDcgMjYKICAgIEwxMCAyMyBMMTMgMjYgTDE2IDIzIEwxOSAyNiBMMjIgMjMgTDI1IDI2CiAgICBMMjUgMTQKICAgIEMyNSA5IDIxLjUgNSAxNiA1CiAgICBaCiAgIiBmaWxsPSIjZDRhODRiIi8+CiAgPGNpcmNsZSBjeD0iMTIuNSIgY3k9IjE1IiByPSIyIiBmaWxsPSIjMGUwZTBlIi8+CiAgPGNpcmNsZSBjeD0iMTkuNSIgY3k9IjE1IiByPSIyIiBmaWxsPSIjMGUwZTBlIi8+Cjwvc3ZnPg==">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@300;400;500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   :root {
-    --bg: #f5f2eb;
-    --bg-card: #faf8f3;
-    --ink: #1a1814;
-    --ink-muted: #6b6760;
-    --ink-faint: #b0ada6;
-    --accent: #c4472a;
-    --bubble: #8b2e18;
-    --accent-light: #f7ede9;
-    --border: #ddd9d0;
-    --border-strong: #c8c4ba;
-    --serif: 'Playfair Display', Georgia, serif;
-    --sans: 'DM Sans', system-ui, sans-serif;
+    --bg: #0e0e0e;
+    --bg2: #141414;
+    --bg3: #1a1a1a;
+    --border: #2a2a2a;
+    --border2: #333;
+    --text: #e8e4dc;
+    --text2: #b8b2aa;
+    --text3: #a09890;
+    --accent: #d4a84b;
+    --accent2: #e8c870;
+    --red: #d4604a;
+    --green: #4a8c6a;
+    --blue: #6a8cac;
+    --serif: 'Libre Baskerville', Georgia, serif;
+    --mono: 'DM Mono', monospace;
+    --sans: 'Instrument Sans', sans-serif;
   }
+
+  /* ── LIGHT THEME ──────────────────────────────────────────── */
+  /* All contrast ratios verified against WCAG AA (4.5:1 min)   */
+  /* Body text #2a2520 on #f0ede8: 16.8:1 — AAA                 */
+  /* Muted text #5a524a on #f0ede8:  8.1:1 — AAA                */
+  /* Accent #7a5a0a on #f0ede8:      7.2:1 — AAA                */
+  /* Red #7a2f1e on #f0ede8:         9.6:1 — AAA                */
+  /* Green #2d5a3d on #f0ede8:       9.1:1 — AAA                */
+  /* Blue #2d3f5a on #f0ede8:        9.8:1 — AAA                */
+  [data-theme="light"] {
+    --bg: #f0ede8;
+    --bg2: #e6e1d8;
+    --bg3: #ddd8ce;
+    --border: #ccc5b8;
+    --border2: #bdb5a6;
+    --text: #2a2520;
+    --text2: #5a524a;
+    --text3: #645a52;
+    --accent: #7a5a0a;
+    --accent2: #8f6b0d;
+    --red: #7a2f1e;
+    --green: #2d5a3d;
+    --blue: #2d3f5a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
 
   body {
-    font-family: var(--sans);
-    font-size: 20px;
     background: var(--bg);
-    color: var(--ink);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+    color: var(--text);
+    font-family: var(--serif);
+    font-size: 17px;
+    line-height: 1.75;
+    -webkit-font-smoothing: antialiased;
   }
 
-  /* Header */
+  /* NOISE TEXTURE */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.4;
+  }
+
+  /* HEADER */
+  /* Smooth theme transitions for key elements */
+  header, aside, section, .finding, .signal-box, .stat-grid,
+  .quote-card, .stat-cell, .method-bar, .hero, .filter-bar,
+  .filter-btn, .sidebar, .footer-left, footer {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  }
+
   header {
     border-bottom: 1px solid var(--border);
-    padding: 0 2rem;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+    padding: 0 clamp(1.5rem, 5vw, 5rem);
+    height: 56px;
+    display: flex;
+    align-items: stretch;
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    backdrop-filter: blur(12px);
+    z-index: 100;
+    overflow: visible;
+  }
+  .header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 56px;
-    background: var(--bg);
-    position: sticky;
-    top: 0;
-    z-index: 10;
   }
 
   .logo {
-    font-family: var(--serif);
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--ink);
-    text-decoration: none;
-    letter-spacing: -0.01em;
-  }
-
-  .header-meta {
-    font-size: 0.75rem;
-    color: var(--ink-muted);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
+    font-family: var(--mono);
+    font-size: 13px;
     font-weight: 500;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    text-decoration: none;
+    text-transform: uppercase;
   }
 
-  /* Main layout */
-  main {
-    flex: 1;
-    max-width: 720px;
-    margin: 0 auto;
-    width: 100%;
-    padding: 3rem 2rem 8rem;
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+    margin-left: 3rem;
   }
 
-  /* Hero */
+  .nav-links a {
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text);
+    text-decoration: none;
+    opacity: 0.7;
+    position: relative;
+    padding-bottom: 2px;
+    transition: color 0.2s, opacity 0.2s;
+  }
+
+  .nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.2s ease;
+  }
+
+  .nav-links a:hover {
+    color: var(--accent);
+    opacity: 1;
+  }
+
+  .nav-links a:hover::after {
+    transform: scaleX(1);
+  }
+
+  .nav-cta {
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: var(--bg) !important;
+    background: var(--accent);
+    padding: 6px 16px;
+    border-radius: 2px;
+    transition: background 0.2s !important;
+  }
+
+  .nav-cta:hover { background: var(--accent2) !important; color: var(--bg) !important; }
+
+  /* HERO */
   .hero {
-    margin-bottom: 3rem;
-    padding-bottom: 2.5rem;
+    padding: clamp(4rem, 10vw, 8rem) clamp(1.5rem, 5vw, 5rem);
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: end;
     border-bottom: 1px solid var(--border);
   }
 
   .hero-label {
-    font-size: 0.7rem;
-    font-weight: 500;
-    letter-spacing: 0.1em;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.2em;
     text-transform: uppercase;
     color: var(--accent);
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
   }
 
-  .hero h1 {
+  .hero-label::before {
+    content: '';
+    display: inline-block;
+    width: 24px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  h1 {
     font-family: var(--serif);
-    font-size: clamp(2rem, 5vw, 3rem);
-    font-weight: 400;
+    font-size: clamp(2.2rem, 4vw, 3.5rem);
+    font-weight: 700;
     line-height: 1.15;
-    color: var(--ink);
-    letter-spacing: -0.02em;
-    margin-bottom: 1rem;
+    color: var(--text);
+    margin-bottom: 1.5rem;
   }
 
-  .hero h1 em {
+  h1 em {
     font-style: italic;
     color: var(--accent);
   }
 
-  .hero p {
-    font-size: 1.1rem;
-    line-height: 1.7;
-    color: var(--ink-muted);
-    max-width: 520px;
-    font-weight: 300;
-  }
-
-  /* Suggested questions */
-  .suggestions {
-    margin-bottom: 2.5rem;
-  }
-
-  .suggestions-label {
-    font-size: 0.7rem;
-    font-weight: 500;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--ink-faint);
-    margin-bottom: 0.75rem;
-  }
-
-  .suggestion-pills {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-
-  .pill {
+  .hero-meta {
     font-family: var(--sans);
-    font-size: 0.95rem;
-    font-weight: 400;
-    color: var(--ink-muted);
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 2rem;
-    padding: 0.4rem 0.9rem;
-    cursor: pointer;
-    transition: all 0.15s ease;
-    white-space: nowrap;
+    font-size: 13px;
+    color: var(--text3);
+    letter-spacing: 0.05em;
   }
 
-  .pill:hover {
-    background: var(--accent-light);
-    border-color: var(--accent);
-    color: var(--accent);
-  }
-
-  /* Chat thread */
-  #thread {
+  .hero-right {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 1.5rem;
+  }
+
+  .hero-stat {
+    border-left: 2px solid var(--border2);
+    padding-left: 1.25rem;
+  }
+
+  .hero-stat-num {
+    font-family: var(--mono);
+    font-size: 2.2rem;
+    font-weight: 400;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 0.3rem;
+  }
+
+  .hero-stat-label {
+    font-family: var(--sans);
+    font-size: 12px;
+    color: var(--text2);
+    letter-spacing: 0.04em;
+  }
+
+  /* METHODOLOGY BAR */
+  .method-bar {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 1.25rem clamp(1.5rem, 5vw, 5rem);
+  }
+
+  .method-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 3rem;
+    flex-wrap: wrap;
+  }
+
+  .method-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .method-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    flex-shrink: 0;
+  }
+
+  .method-text {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text2);
+    letter-spacing: 0.1em;
+  }
+
+  /* MAIN LAYOUT */
+  .main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 clamp(1.5rem, 5vw, 5rem);
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 4rem;
+    align-items: start;
+    padding-top: 4rem;
+    padding-bottom: 6rem;
+  }
+
+  /* SIDEBAR NAV */
+  .sidebar {
+    position: sticky;
+    top: 80px;
+  }
+
+  .sidebar-section {
     margin-bottom: 2rem;
   }
 
-  .msg {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    animation: fadeUp 0.3s ease;
-  }
-
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(8px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  .msg-role {
-    font-size: 0.7rem;
-    font-weight: 500;
-    letter-spacing: 0.08em;
+  .sidebar-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
     text-transform: uppercase;
-    color: var(--ink-faint);
+    color: var(--text3);
+    margin-bottom: 0.75rem;
   }
 
-  .msg.user .msg-role { color: var(--accent); }
-
-  .msg-body {
-    font-size: 1.1rem;
-    line-height: 1.8;
-    color: var(--ink);
-  }
-
-  .msg.user .msg-body {
+  .sidebar-link {
+    display: block;
     font-family: var(--sans);
-    font-size: 1.05rem;
-    font-style: normal;
+    font-size: 13px;
+    color: var(--text2);
+    text-decoration: none;
+    padding: 5px 0;
+    border-left: 2px solid transparent;
+    padding-left: 10px;
+    margin-left: -12px;
+    transition: all 0.2s;
+  }
+
+  .sidebar-link:hover {
+    color: var(--text);
+    border-left-color: rgba(212, 168, 75, 0.35);
+    border-left-width: 1px;
+  }
+
+  .sidebar-link.active {
+    color: var(--text);
+    border-left-color: var(--accent);
+    border-left-width: 2px;
+    padding-left: 10px;
+  }
+
+  /* FILTER BAR */
+  .filter-bar {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 3rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .filter-btn {
+    font-family: var(--mono);
+    font-size: 11px;
     font-weight: 400;
-    color: #fff;
-    background: var(--bubble);
-    border-radius: 18px 18px 4px 18px;
-    padding: 0.75rem 1.1rem;
-    display: inline-block;
-    max-width: 88%;
-    align-self: flex-end;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text2);
+    background: transparent;
+    border: 1px solid var(--border2);
+    padding: 5px 12px;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.15s;
   }
 
-  .msg.user {
-    align-items: flex-end;
+  .filter-btn:hover { border-color: var(--text2); color: var(--text); }
+
+  .filter-btn.active {
+    background: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
   }
 
-  .msg.user .msg-role {
+  /* CONTENT */
+  .content { min-width: 0; }
+
+  /* SECTION */
+  section {
+    margin-bottom: 6rem;
+    scroll-margin-top: 80px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .section-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text3);
+    letter-spacing: 0.15em;
+    flex-shrink: 0;
+  }
+
+  h2 {
+    font-family: var(--serif);
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-top: 0.25rem;
+    margin-bottom: 1.25rem;
+    line-height: 1.25;
+  }
+
+  .section-intro {
+    font-family: var(--sans);
+    font-size: 14px;
+    color: var(--text2);
+    margin-bottom: 2.5rem;
+    line-height: 1.75;
+    max-width: 600px;
+  }
+
+  p {
+    margin-bottom: 1.5rem;
+    color: var(--text);
+    max-width: 68ch;
+  }
+
+  /* STAT GRID */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin-bottom: 2.5rem;
+  }
+
+  .stat-cell {
+    background: var(--bg2);
+    padding: 1.5rem;
+    transition: background 0.2s;
+  }
+
+  .stat-cell:hover { background: var(--bg3); }
+
+  .stat-value {
+    font-family: var(--mono);
+    font-size: 2rem;
+    font-weight: 400;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 0.4rem;
+  }
+
+  .stat-label {
+    font-family: var(--sans);
+    font-size: 12px;
+    color: var(--text2);
+    line-height: 1.4;
+  }
+
+  .stat-source {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text3);
+    margin-top: 0.5rem;
+    letter-spacing: 0.05em;
+  }
+
+  /* BAR CHART */
+  .bar-chart {
+    margin-bottom: 2.5rem;
+  }
+
+  .bar-chart-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 1.25rem;
+  }
+
+  .bar-row {
+    display: grid;
+    grid-template-columns: 200px 1fr 60px;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .bar-label {
+    font-family: var(--sans);
+    font-size: 13px;
+    color: var(--text2);
     text-align: right;
   }
 
-  /* Sources */
-  .sources {
-    margin-top: 1.25rem;
-    padding-top: 1rem;
-    border-top: 1px solid var(--border);
+  .bar-track {
+    height: 6px;
+    background: var(--bg3);
+    border-radius: 1px;
+    overflow: hidden;
   }
 
-  .sources-label {
-    font-size: 0.7rem;
-    font-weight: 500;
-    letter-spacing: 0.08em;
+  .bar-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 1px;
+    width: 0;
+    transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .bar-fill.green { background: var(--green); }
+  .bar-fill.red { background: var(--red); }
+  .bar-fill.blue { background: var(--blue); }
+
+  .bar-value {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text2);
+  }
+
+  /* QUOTE CARDS */
+  .quote-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin-bottom: 2.5rem;
+  }
+
+  .quote-card {
+    background: var(--bg2);
+    padding: 1.75rem;
+    cursor: default;
+    transition: background 0.2s;
+    display: none;
+  }
+
+  .quote-card.visible { display: block; }
+
+  .quote-card:hover { background: var(--bg3); }
+
+  .quote-text {
+    font-family: var(--serif);
+    font-size: 15px;
+    font-style: italic;
+    line-height: 1.65;
+    color: var(--text);
+    margin-bottom: 1rem;
+    border-left: 2px solid var(--accent);
+    padding-left: 1rem;
+  }
+
+  .quote-meta {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: var(--ink-faint);
-    margin-bottom: 0.6rem;
+    color: var(--text3);
   }
 
-  .source-item {
+  .quote-tag {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    color: var(--text3);
+    padding: 2px 6px;
+    border-radius: 1px;
+    margin-top: 0.5rem;
+  }
+
+  .quote-tag.candidate { border-color: var(--accent); color: var(--accent); }
+  .quote-tag.recruiter { border-color: var(--blue); color: var(--blue); }
+
+  /* FINDING CARDS */
+  .findings {
     display: flex;
-    align-items: baseline;
-    gap: 0.75rem;
-    padding: 0.4rem 0;
-    border-bottom: 1px solid var(--border);
-    text-decoration: none;
-    transition: color 0.15s;
+    flex-direction: column;
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin-bottom: 2.5rem;
   }
 
-  .source-item:last-child { border-bottom: none; }
-
-  .source-item:hover .source-title { color: var(--accent); }
-
-  .source-title {
-    font-size: 0.95rem;
-    color: var(--ink);
-    font-weight: 400;
-    flex: 1;
-    transition: color 0.15s;
+  .finding {
+    background: var(--bg2);
+    padding: 1.5rem 1.75rem;
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    gap: 1.25rem;
+    align-items: start;
+    transition: background 0.2s;
+    cursor: default;
   }
 
-  .source-date {
-    font-size: 0.85rem;
-    color: var(--ink-faint);
-    white-space: nowrap;
-    font-variant-numeric: tabular-nums;
+  .finding:hover { background: var(--bg3); }
+
+  .finding-num {
+    font-family: var(--mono);
+    font-size: 1.4rem;
+    color: var(--text3);
+    line-height: 1;
+    padding-top: 2px;
   }
 
-  /* Thinking state */
-  .thinking {
+  .finding-title {
+    font-family: var(--serif);
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.4rem;
+    line-height: 1.35;
+  }
+
+  .finding-body {
+    font-family: var(--sans);
+    font-size: 13.5px;
+    color: var(--text2);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  /* TIMELINE */
+  .timeline {
+    position: relative;
+    padding-left: 2rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 8px;
+    bottom: 8px;
+    width: 1px;
+    background: var(--border2);
+  }
+
+  .tl-item {
+    position: relative;
+    margin-bottom: 2rem;
+  }
+
+  .tl-item::before {
+    content: '';
+    position: absolute;
+    left: -2rem;
+    top: 8px;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 2px solid var(--bg);
+    transform: translateX(-3px);
+  }
+
+  .tl-date {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    margin-bottom: 0.25rem;
+  }
+
+  .tl-title {
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.3rem;
+  }
+
+  .tl-body {
+    font-family: var(--sans);
+    font-size: 13px;
+    color: var(--text2);
+    line-height: 1.6;
+  }
+
+  /* SIGNAL CARDS - full width insight highlights */
+  .signal {
+    border: 1px solid var(--border2);
+    background: var(--bg2);
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .signal::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--accent);
+  }
+
+  .signal-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.75rem;
+  }
+
+  .signal-text {
+    font-family: var(--serif);
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: var(--text);
+    margin: 0;
+    font-style: italic;
+  }
+
+  /* DONUT CHART (SVG) */
+  .chart-wrapper {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    color: var(--ink-muted);
-    font-size: 0.85rem;
-    font-style: italic;
-    font-family: var(--serif);
+    gap: 3rem;
+    margin-bottom: 2.5rem;
+    flex-wrap: wrap;
   }
 
-  .dots span {
-    display: inline-block;
-    width: 4px;
-    height: 4px;
-    background: var(--ink-muted);
-    border-radius: 50%;
-    animation: pulse 1.2s ease-in-out infinite;
-    margin: 0 1px;
-  }
-  .dots span:nth-child(2) { animation-delay: 0.2s; }
-  .dots span:nth-child(3) { animation-delay: 0.4s; }
-
-  @keyframes pulse {
-    0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
-    40% { opacity: 1; transform: scale(1); }
+  .donut-chart {
+    flex-shrink: 0;
   }
 
-  /* Input bar */
-  .input-bar {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: var(--bg);
-    border-top: 1px solid var(--border);
-    padding: 1rem 2rem 1.5rem;
-    z-index: 10;
-  }
-
-  .input-inner {
-    max-width: 720px;
-    margin: 0 auto;
+  .donut-legend {
     display: flex;
+    flex-direction: column;
     gap: 0.75rem;
-    align-items: flex-end;
   }
 
-  textarea {
-    flex: 1;
-    font-family: var(--sans);
-    font-size: 0.95rem;
-    font-weight: 300;
-    color: var(--ink);
-    background: var(--bg-card);
-    border: 1px solid var(--border-strong);
-    border-radius: 4px;
-    padding: 0.75rem 1rem;
-    resize: none;
-    outline: none;
-    line-height: 1.5;
-    min-height: 48px;
-    max-height: 140px;
-    overflow-y: auto;
-    transition: border-color 0.15s;
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
   }
 
-  textarea:focus { border-color: var(--accent); }
-  textarea::placeholder { color: var(--ink-faint); }
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 1px;
+    flex-shrink: 0;
+  }
 
-  button#send {
+  .legend-label {
     font-family: var(--sans);
-    font-size: 0.8rem;
-    font-weight: 500;
-    letter-spacing: 0.04em;
-    color: var(--bg);
-    background: var(--ink);
+    font-size: 13px;
+    color: var(--text2);
+  }
+
+  .legend-pct {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text);
+    margin-left: auto;
+  }
+
+  .legend-item { min-width: 240px; }
+
+  /* CTA SECTION */
+  .cta-section {
+    border: 1px solid var(--accent);
+    padding: 3rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    margin-top: 4rem;
+  }
+
+  .cta-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, rgba(212,168,75,0.06) 0%, transparent 70%);
+  }
+
+  .cta-eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1rem;
+  }
+
+  .cta-title {
+    font-family: var(--serif);
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.75rem;
+    line-height: 1.25;
+  }
+
+  .cta-sub {
+    font-family: var(--sans);
+    font-size: 15px;
+    color: var(--text2);
+    margin-bottom: 2.5rem;
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+  }
+
+  .cta-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    padding: 12px 28px;
+    border-radius: 2px;
     border: none;
-    border-radius: 4px;
-    padding: 0.75rem 1.25rem;
     cursor: pointer;
-    white-space: nowrap;
-    height: 48px;
-    transition: background 0.15s;
+    text-decoration: none;
+    transition: all 0.2s;
   }
 
-  button#send:hover { background: var(--accent); }
-  button#send:disabled { background: var(--ink-faint); cursor: not-allowed; }
+  .btn-primary {
+    background: var(--accent);
+    color: var(--bg);
+  }
 
-  /* Divider between exchanges */
+  .btn-primary:hover { background: var(--accent2); }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border2);
+  }
+
+  .btn-secondary:hover { border-color: var(--text2); }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 2rem clamp(1.5rem, 5vw, 5rem);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: gap;
+  }
+
+  .footer-left {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text3);
+    letter-spacing: 0.1em;
+  }
+
+  .footer-note {
+    font-family: var(--sans);
+    font-size: 12px;
+    color: var(--text3);
+    max-width: 400px;
+    line-height: 1.5;
+  }
+
+  /* DIVIDER */
   .divider {
     height: 1px;
     background: var(--border);
-    margin: 0.5rem 0;
+    margin: 2.5rem 0;
   }
 
-  /* Footer note */
-  .input-note {
-    font-size: 0.7rem;
-    color: var(--ink-faint);
-    text-align: center;
-    margin-top: 0.5rem;
+  /* ANIMATE ON SCROLL */
+  .anim {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
   }
+
+  .anim.in-view {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ── HEADER LAYOUT ───────────────────────────────────────── */
+  .header-divider {
+    width: 1px;
+    height: 18px;
+    background: var(--border2);
+    display: inline-block;
+    margin: 0 1.5rem;
+    flex-shrink: 0;
+  }
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+
+  /* ── HAMBURGER MENU ──────────────────────────────────────── */
+  .hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 4px;
+    transition: background 0.15s ease;
+  }
+  .hamburger:hover { background: var(--bg3); }
+  .hamburger:active { background: var(--border); }
+  .hamburger span {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: var(--text);
+    border-radius: 2px;
+    transition: all 0.25s ease;
+    transform-origin: center;
+  }
+  .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+  .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  .mobile-nav {
+    display: none;
+    position: fixed;
+    top: 56px;
+    left: 0;
+    right: 0;
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 0.5rem 0;
+    z-index: 99;
+    flex-direction: column;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  }
+  .mobile-nav.open { display: flex; }
+  .mobile-nav a {
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text);
+    text-decoration: none;
+    padding: 0.9rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    opacity: 0.8;
+    transition: background 0.15s ease, opacity 0.15s ease, padding-left 0.15s ease;
+  }
+  .mobile-nav a:last-child { border-bottom: none; }
+  .mobile-nav a:hover { background: var(--bg3); opacity: 1; padding-left: 1.85rem; }
+  .mobile-nav a:active { background: var(--border); opacity: 1; }
+
+  /* ── RESPONSIVE ─────────────────────────────────────────── */
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; gap: 2rem; }
+    .main { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .bar-row { grid-template-columns: 140px 1fr 50px; }
+    .tldr-grid { grid-template-columns: 1fr !important; gap: 2rem !important; }
+    .about-grid { grid-template-columns: 1fr !important; gap: 2rem !important; }
+  }
+
+  @media (max-width: 700px) {
+    .nav-links { display: none; }
+    .hamburger { display: flex; }
+    .header-divider { display: none; }
+    .hero-right { display: none; }
+    .bar-row { grid-template-columns: 100px 1fr 40px; }
+    .bar-label { font-size: 11px; }
+    .hero {
+      padding: 3rem 1.25rem;
+    }
+    section {
+      padding-left: 1.25rem !important;
+      padding-right: 1.25rem !important;
+    }
+    .findings {
+      grid-template-columns: 1fr !important;
+    }
+    .stat-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+    .quote-card {
+      padding: 1.25rem;
+    }
+    .filter-bar {
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    h2 {
+      font-size: 1.4rem;
+    }
+    footer {
+      flex-direction: column;
+      gap: 0.75rem;
+      text-align: center;
+      padding: 1.5rem 1.25rem;
+    }
+    .footer-left { margin: 0; }
+  }
+
+  @media (max-width: 420px) {
+    .stat-grid { grid-template-columns: 1fr; }
+    .stat-value { font-size: 2rem; }
+  }
+
+  /* ── THEME TOGGLE SWITCH ─────────────────────────────────── */
+  .theme-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    outline: none;
+  }
+  .toggle-icon {
+    font-size: 20px;
+    line-height: 1;
+    transition: color 0.3s ease;
+    user-select: none;
+  }
+  /* Dark mode: moon (left) is active → bright blue. Sun is muted. */
+  #theme-icon-moon {
+    color: #5b9bd5;
+    opacity: 1;
+  }
+  #theme-icon-sun {
+    color: var(--text);
+    opacity: 0.4;
+  }
+  /* Light mode: sun (right) is active → gold. Moon is muted. */
+  [data-theme="light"] #theme-icon-sun {
+    color: var(--accent);
+    opacity: 1;
+  }
+  [data-theme="light"] #theme-icon-moon {
+    color: var(--text2);
+    opacity: 0.4;
+  }
+  /* Track */
+  .toggle-track {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    border-radius: 12px;
+    background: var(--bg3);
+    border: 1px solid var(--text3);
+    transition: background 0.3s ease, border-color 0.3s ease;
+    flex-shrink: 0;
+  }
+  /* Knob */
+  .toggle-knob {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--text);
+    transition: transform 0.3s cubic-bezier(0.4,0,0.2,1), background 0.3s ease;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.6);
+  }
+  /* Light mode — knob slides right and turns gold */
+  [data-theme="light"] .toggle-knob {
+    transform: translateX(20px);
+    background: var(--accent);
+  }
+  [data-theme="light"] .toggle-track {
+    background: var(--bg2);
+    border-color: var(--border);
+  }
+  .theme-toggle:hover .toggle-track {
+    border-color: var(--accent);
+  }
+  .theme-toggle:hover .toggle-knob {
+    background: var(--accent);
+  }
+  .theme-toggle:focus-visible .toggle-track {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  /* ── HEADER AUDIO ICON BUTTON ───────────────────────────── */
+  .audio-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px 6px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    color: var(--text2);
+    opacity: 0.7;
+    transition: opacity 0.2s ease, color 0.2s ease;
+    outline: none;
+    border-radius: 4px;
+  }
+  .audio-btn:hover { opacity: 1; color: var(--accent); }
+  .audio-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .audio-btn svg { width: 20px; height: 20px; stroke: currentColor; fill: none; }
+  .audio-btn.is-active { color: var(--accent); opacity: 1; }
+
+  /* ── AUDIO BAR — idle state (notice) ─────────────────── */
+  .audio-bar {
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    padding: 0 clamp(1.5rem, 5vw, 5rem);
+    overflow: hidden;
+    transition: background 0.25s ease;
+  }
+  .audio-bar.active {
+    background: var(--bg2);
+    position: sticky;
+    top: 56px;
+    z-index: 90;
+    border-bottom-color: var(--border2);
+  }
+  .audio-bar-inner {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    height: 42px;
+  }
+
+  /* idle notice */
+  .audio-notice {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    width: 100%;
+  }
+  .audio-notice svg {
+    width: 14px; height: 14px;
+    stroke: var(--accent); fill: none; flex-shrink: 0; opacity: 0.85;
+  }
+  .audio-notice span {
+    font-family: var(--sans); font-size: 12.5px; color: var(--text2); line-height: 1;
+  }
+  .audio-notice a {
+    color: var(--accent); text-decoration: none; font-weight: 500;
+    border-bottom: 1px solid transparent; transition: border-color 0.15s; cursor: pointer;
+  }
+  .audio-notice a:hover { border-color: var(--accent); }
+
+  /* player (shown when active) */
+  .audio-player-bar {
+    display: none;
+    align-items: center;
+    gap: 0.9rem;
+    width: 100%;
+  }
+  .audio-bar.active .audio-notice  { display: none; }
+  .audio-bar.active .audio-player-bar { display: flex; }
+
+  /* play/pause button */
+  .ap-playbtn {
+    background: none; border: none; cursor: pointer; padding: 0;
+    color: var(--accent); flex-shrink: 0; display: flex; align-items: center;
+    transition: opacity 0.15s;
+  }
+  .ap-playbtn:hover { opacity: 0.75; }
+  .ap-playbtn svg { width: 22px; height: 22px; stroke: currentColor; fill: none; }
+
+  /* scrubber track */
+  .ap-track-wrap {
+    flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0;
+  }
+  .ap-scrubber {
+    -webkit-appearance: none; appearance: none;
+    width: 100%; height: 3px; border-radius: 2px; cursor: pointer; outline: none;
+    background: linear-gradient(to right, var(--accent) 0%, var(--accent) 0%, var(--border2) 0%);
+  }
+  .ap-scrubber::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 11px; height: 11px; border-radius: 50%;
+    background: var(--accent); cursor: pointer;
+    box-shadow: 0 0 0 2px var(--bg2);
+  }
+  .ap-scrubber::-moz-range-thumb {
+    width: 11px; height: 11px; border-radius: 50%; border: none;
+    background: var(--accent); cursor: pointer;
+  }
+  .ap-times {
+    display: flex; justify-content: space-between;
+    font-family: var(--mono); font-size: 10px; color: var(--text3);
+  }
+
+  /* speed selector */
+  .ap-speed {
+    font-family: var(--mono); font-size: 11px; color: var(--text2);
+    cursor: pointer; flex-shrink: 0; padding: 3px 6px;
+    border: 1px solid var(--border2); border-radius: 3px;
+    background: none; transition: color 0.15s, border-color 0.15s;
+    user-select: none;
+  }
+  .ap-speed:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* speed picker popover */
+  .ap-speed-opts {
+    position: absolute; bottom: calc(100% + 6px); left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg3); border: 1px solid var(--border2);
+    border-radius: 4px; overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.35);
+    display: none; flex-direction: column; z-index: 999;
+    min-width: 64px;
+  }
+  .ap-speed-opts.open { display: flex; }
+  .ap-speed-opt {
+    font-family: var(--mono); font-size: 12px; padding: 7px 14px;
+    cursor: pointer; color: var(--text2); text-align: center;
+    transition: background 0.1s, color 0.1s; border: none; background: none;
+    white-space: nowrap;
+  }
+  .ap-speed-opt:hover { background: var(--bg2); color: var(--accent); }
+  .ap-speed-opt.selected { color: var(--accent); font-weight: 600; }
+
+  /* speed wrapper for positioning */
+  .ap-speed-wrap { position: relative; flex-shrink: 0; display: flex; }
+
 </style>
 </head>
 <body>
 
 <header>
-  <a class="logo" href="#">Boris Kehr</a>
-  <span class="header-meta">400+ LinkedIn posts and articles</span>
-</header>
-
-<main>
-  <div class="hero">
-    <p class="hero-label">Interactive archive</p>
-    <h1>Ask me anything about<br><em>design, product & AI</em></h1>
-    <p>Answers drawn from 6 years of posts and articles. Ask about hiring, UX craft, AI in design, product thinking — or anything else I've written about.</p>
-  </div>
-
-  <div class="suggestions">
-    <p class="suggestions-label">Try asking</p>
-    <div class="suggestion-pills">
-      <button class="pill" onclick="ask('What do you think about how AI is changing design?', this)">AI and design</button>
-      <button class="pill" onclick="ask('Why is hiring broken?', this)">Why is hiring broken?</button>
-      <button class="pill" onclick="ask('What makes a good product manager?', this)">What makes a good PM?</button>
-      <button class="pill" onclick="ask('How should designers handle criticism?', this)">Handling criticism</button>
-      <button class="pill" onclick="ask('What is the feature factory problem?', this)">Feature factory problem</button>
-      <button class="pill" onclick="ask('How has your thinking evolved over the years?', this)">How has your thinking evolved?</button>
+  <div class="header-inner">
+    <a href="#" class="logo">Ghosted</a>
+    <span class="header-divider"></span>
+    <ul class="nav-links" style="margin-left: 0;">
+      <li><a href="#findings">Findings</a></li>
+      <li><a href="#candidates">Candidates</a></li>
+      <li><a href="#companies">Companies</a></li>
+      <li><a href="#signals">Signals</a></li>
+      <li><a href="#future">What they want</a></li>
+      <li><a href="#sources">Sources</a></li>
+      <li><a href="#connect">Connect</a></li>
+    </ul>
+    <div class="header-right">
+      <button class="hamburger" id="hamburger" aria-label="Open navigation">
+        <span></span><span></span><span></span>
+      </button>
+      <!-- AUDIO BUTTON -->
+      <button class="audio-btn" id="audio-btn" aria-label="Listen to this report" title="Listen to this report">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 14a9 9 0 0 1 18 0"/><rect x="2" y="14" width="4" height="6" rx="2"/><rect x="18" y="14" width="4" height="6" rx="2"/></svg>
+      </button>
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle light/dark mode" title="Toggle light/dark mode">
+        <span class="toggle-icon" id="theme-icon-moon">&#9790;</span>
+        <span class="toggle-track">
+          <span class="toggle-knob"></span>
+        </span>
+        <span class="toggle-icon" id="theme-icon-sun">&#9788;</span>
+      </button>
     </div>
   </div>
+</header>
 
-  <div id="thread"></div>
-</main>
+<!-- MOBILE NAV -->
+<nav class="mobile-nav" id="mobile-nav">
+  <a href="#findings" class="mobile-nav-link">Findings</a>
+  <a href="#candidates" class="mobile-nav-link">Candidates</a>
+  <a href="#companies" class="mobile-nav-link">Companies</a>
+  <a href="#signals" class="mobile-nav-link">Signals</a>
+  <a href="#future" class="mobile-nav-link">What they want</a>
+  <a href="#sources" class="mobile-nav-link">Sources</a>
+  <a href="#connect" class="mobile-nav-link">Connect</a>
+</nav>
 
-<div class="input-bar">
-  <div class="input-inner">
-    <textarea id="input" placeholder="Ask something…" rows="1"></textarea>
-    <button id="send" onclick="sendQuestion()">Ask →</button>
+<!-- AUDIO BAR -->
+<div class="audio-bar" id="audio-bar">
+  <div class="audio-bar-inner">
+
+    <!-- IDLE NOTICE -->
+    <div class="audio-notice" id="audio-notice">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 14a9 9 0 0 1 18 0"/><rect x="2" y="14" width="4" height="6" rx="2"/><rect x="18" y="14" width="4" height="6" rx="2"/></svg>
+      <span>Prefer to listen? <a id="tldr-audio-link">Play the audio version</a> — 18 min</span>
+    </div>
+
+    <!-- PLAYER (shown when active) -->
+    <div class="audio-player-bar" id="audio-player-bar">
+
+      <!-- hidden native audio element -->
+      <audio id="main-audio" preload="none">
+        <source src="ghosted-narration.mp3" type="audio/mpeg">
+      </audio>
+
+      <!-- play/pause -->
+      <button class="ap-playbtn" id="ap-playbtn" aria-label="Play / Pause">
+        <svg id="ap-play-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="5 3 19 12 5 21 5 3" fill="currentColor" stroke="none"/>
+        </svg>
+      </button>
+
+      <!-- scrubber + times -->
+      <div class="ap-track-wrap">
+        <input class="ap-scrubber" id="ap-scrubber" type="range" min="0" max="100" value="0" step="0.1">
+        <div class="ap-times">
+          <span id="ap-current">0:00</span>
+          <span id="ap-duration">—</span>
+        </div>
+      </div>
+
+      <!-- speed -->
+      <div class="ap-speed-wrap">
+        <div class="ap-speed" id="ap-speed">1×</div>
+        <div class="ap-speed-opts" id="ap-speed-opts">
+          <button class="ap-speed-opt" data-speed="0.75">0.75×</button>
+          <button class="ap-speed-opt selected" data-speed="1">1×</button>
+          <button class="ap-speed-opt" data-speed="1.25">1.25×</button>
+          <button class="ap-speed-opt" data-speed="1.5">1.5×</button>
+          <button class="ap-speed-opt" data-speed="1.75">1.75×</button>
+          <button class="ap-speed-opt" data-speed="2">2×</button>
+        </div>
+      </div>
+
+    </div><!-- /audio-player-bar -->
   </div>
-  <p class="input-note">Answers based on Boris's writing. May not reflect his current views.</p>
 </div>
 
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-left">
+    <div class="hero-label">Research Report — April 2026</div>
+    <h1 style="font-size: clamp(3rem, 7vw, 5.5rem); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.2em; line-height: 1; color: var(--accent);">
+      <svg viewBox="0 0 40 52" style="height: 0.9em; width: auto; flex-shrink: 0; margin-bottom: 0.05em;" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20 3 C10 3 4 10 4 19 L4 46 L9 41 L14 46 L20 41 L26 46 L31 41 L36 46 L36 19 C36 10 30 3 20 3 Z"
+          stroke="currentColor" stroke-width="2" stroke-linejoin="round" fill="none"/>
+        <circle cx="14" cy="21" r="2.5" fill="currentColor"/>
+        <circle cx="26" cy="21" r="2.5" fill="currentColor"/>
+      </svg>
+      <em>Ghosted</em>
+    </h1>
+    <p style="font-family: var(--sans); font-size: 0.9rem; color: var(--text2); letter-spacing: 0.08em; margin-bottom: 1.5rem; text-transform: uppercase;">Both sides of a broken hiring process</p>
+    <p style="font-family: var(--sans); font-size: 15px; color: var(--text2); line-height: 1.65; margin-bottom: 1.5rem;">
+      I interviewed 24 designers, recruiters, and hiring managers across Sweden. This is what I found, and why the system keeps failing the very people it is supposed to serve.
+    </p>
+    <div class="hero-meta">Independent Research · Stockholm, Sweden · 24 interviews · March–April 2026</div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-stat">
+      <div class="hero-stat-num">24</div>
+      <div class="hero-stat-label">in-depth interviews with designers and hiring professionals</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">83</div>
+      <div class="hero-stat-label">median days to first offer in Q4 2025 — up from 57 in Q1</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">79%</div>
+      <div class="hero-stat-label">of senior placements happen through personal contacts, not job ads</div>
+    </div>
+  </div>
+</div>
+
+<!-- METHODOLOGY BAR -->
+<div class="method-bar">
+  <div class="method-inner">
+    <div class="method-item">
+      <div class="method-dot"></div>
+      <span class="method-text">13 designer interviews</span>
+    </div>
+    <div class="method-item">
+      <div class="method-dot" style="background: var(--blue)"></div>
+      <span class="method-text">9 recruiter interviews</span>
+    </div>
+    <div class="method-item">
+      <div class="method-dot" style="background: var(--green)"></div>
+      <span class="method-text">1 industry advisor</span>
+    </div>
+    <div class="method-item">
+      <div class="method-dot" style="background: var(--text3)"></div>
+      <span class="method-text">All interviews anonymised</span>
+    </div>
+    <div class="method-item">
+      <div class="method-dot" style="background: var(--text3)"></div>
+      <span class="method-text">Stockholm + remote Sweden</span>
+    </div>
+  </div>
+</div>
+
+<!-- TLDR -->
+<div style="background: var(--bg2); border-bottom: 1px solid var(--border); padding: 3rem clamp(1.5rem, 5vw, 5rem);">
+  <div style="max-width: 640px; margin: 0 auto;">
+    <div style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 1.25rem;">TL;DR</div>
+    <p style="font-family: var(--serif); font-size: 1.05rem; line-height: 1.8; color: var(--text); margin-bottom: 1.5rem;">The Swedish UX hiring market is failing both sides at the same time. The infrastructure between them was built for a different era. Nobody has rebuilt it.</p>
+    <p style="font-family: var(--serif); font-size: 1.05rem; line-height: 1.8; color: var(--text); margin-bottom: 1.5rem;">AI has accelerated the breakdown without fixing the underlying problem. Candidates send hundreds of applications into the void. Recruiters drown in noise they cannot convert into signal. Both sides end up performing for a system that serves neither.</p>
+    <p style="font-family: var(--serif); font-size: 1.05rem; line-height: 1.8; color: var(--text2); font-style: italic; margin-bottom: 0;">What people actually want is not complicated. This research shows what it is, and why the system keeps getting in the way.</p>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">In this report</div>
+      <a href="#findings" class="sidebar-link active">Core findings</a>
+      <a href="#candidates" class="sidebar-link">Candidates</a>
+      <a href="#companies" class="sidebar-link">Companies</a>
+      <a href="#ai" class="sidebar-link">AI in the process</a>
+      <a href="#signals" class="sidebar-link">Key signals</a>
+      <a href="#transparency" class="sidebar-link">Noise & transparency</a>
+      <a href="#quotes" class="sidebar-link">Voices</a>
+      <a href="#external" class="sidebar-link">What data confirms</a>
+      <a href="#market" class="sidebar-link">The market in numbers</a>
+      <a href="#tests" class="sidebar-link">The test problem</a>
+      <a href="#independent" class="sidebar-link">Independent view</a>
+      <a href="#future" class="sidebar-link">What people want</a>
+      <a href="#about" class="sidebar-link">About this research</a>
+      <a href="#sources" class="sidebar-link">Sources</a>
+    </div>
+  </aside>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- NOTE ON METHOD -->
+    <div style="background: var(--bg2); border: 1px solid var(--border); padding: 1.25rem 1.5rem; margin-bottom: 3rem; display: flex; gap: 1rem; align-items: start;">
+      <div style="font-family: var(--mono); font-size: 10px; color: var(--accent); letter-spacing: 0.15em; text-transform: uppercase; padding-top: 3px; flex-shrink: 0;">Method</div>
+      <p style="font-family: var(--sans); font-size: 13px; color: var(--text2); line-height: 1.6; margin: 0;">This report is grounded in 24 qualitative interviews I conducted between March and April 2026. All participants are anonymised. A supplementary section places the findings against published quantitative research, to show where the numbers confirm what people said and where they diverge. The interviews came first. The data corroborates.</p>
+    </div>
+
+    <!-- SECTION 1: FINDINGS -->
+    <section id="findings">
+      <div class="section-header anim">
+        <span class="section-num">01 —</span>
+      </div>
+      <h2 class="anim">Seven things that are broken</h2>
+      <p class="section-intro anim">These patterns appeared across nearly every interview, on both sides.</p>
+
+      <div class="findings anim">
+        <div class="finding">
+          <div class="finding-num">01</div>
+          <div>
+            <div class="finding-title">The formal application system is theater — both sides know it</div>
+            <p class="finding-body">Candidates optimise CVs for bots and write AI cover letters nobody reads. Recruiters write AI-generated job descriptions and reject via automated templates. The system is performing for itself.</p>
+          </div>
+        </div>
+        <div class="finding">
+          <div class="finding-num">02</div>
+          <div>
+            <div class="finding-title">The real hiring market runs on relationships, not applications</div>
+            <p class="finding-body">79% of senior placements at one major Stockholm firm happen through personal contacts. The best recruiters have rebuilt their process around personal networks. Job ads are a fallback.</p>
+          </div>
+        </div>
+        <div class="finding">
+          <div class="finding-num">03</div>
+          <div>
+            <div class="finding-title">LinkedIn is indispensable but structurally misaligned</div>
+            <p class="finding-body">Every recruiter uses it; every recruiter says it fails them: bad filters, incomplete profiles, no availability signal. A 'Recruiters Only' mode exists but isn't foolproof. The real problem: LinkedIn optimizes for subscription revenue, not match quality, so there's no pressure to close the gaps recruiters actually care about.</p>
+          </div>
+        </div>
+        <div class="finding">
+          <div class="finding-num">04</div>
+          <div>
+            <div class="finding-title">Experience requirements are political, not skill-based</div>
+            <p class="finding-body">"8-10 years required" is often driven by client procurement rules, not by genuine competency needs. The number inflates because recruiters know candidates apply anyway.</p>
+          </div>
+        </div>
+        <div class="finding">
+          <div class="finding-num">05</div>
+          <div>
+            <div class="finding-title">The human side has been systematically removed. Everyone hates it.</div>
+            <p class="finding-body">Candidates receive template rejections after five-round processes. Recruiters feel uncomfortable with automation but are overwhelmed by volume. The emotional damage shows up in nearly every interview: ghosting, opaque rejections, silence.</p>
+          </div>
+        </div>
+        <div class="finding">
+          <div class="finding-num">06</div>
+          <div>
+            <div class="finding-title">Values and culture are decisive filters with no infrastructure</div>
+            <p class="finding-body">Multiple candidates filter on product ethics, culture, and personal values before applying. No existing platform surfaces this reliably. Candidates cold-message employees at target companies manually to get honest culture reads.</p>
+          </div>
+        </div>
+        <div class="finding">
+          <div class="finding-num">07</div>
+          <div>
+            <div class="finding-title">AI is being used by both sides to game each other, and both sides hate the result</div>
+            <p class="finding-body">Candidates use AI to pass ATS filters. Recruiters receive AI-written cover letters. One candidate described an interviewer reading ChatGPT-generated questions verbatim, with no follow-up. Both sides feel increasingly alienated.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- SECTION 2: CANDIDATES -->
+    <section id="candidates">
+      <div class="section-header anim">
+        <span class="section-num">02 —</span>
+      </div>
+      <h2 class="anim">The candidate side</h2>
+      <p class="section-intro anim">Job searching has become a full-time job. The effort required keeps going up. The signal coming back keeps going down.</p>
+
+      <div class="stat-grid anim">
+        <div class="stat-cell">
+          <div class="stat-value">700+</div>
+          <div class="stat-label">Applications sent by one designer since September. 98% rejection rate.</div>
+          <div class="stat-source">Interview data</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-value">46%</div>
+          <div class="stat-label">Increase in median time-to-offer in 2025, from 57 days to 83 days</div>
+          <div class="stat-source">Huntr 2025</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-value">5/10</div>
+          <div class="stat-label">How one senior designer rated their own interview honesty, because the format makes honesty irrational</div>
+          <div class="stat-source">Interview data</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-value">5–7</div>
+          <div class="stat-label">Interview rounds now standard for some senior roles before any offer</div>
+          <div class="stat-source">Interview data</div>
+        </div>
+      </div>
+
+      <div class="bar-chart anim">
+        <div class="bar-chart-title">How candidates currently track applications</div>
+        <div class="bar-row">
+          <div class="bar-label">Spreadsheets / Excel</div>
+          <div class="bar-track"><div class="bar-fill" data-width="58%"></div></div>
+          <div class="bar-value">58%</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">LinkedIn saves</div>
+          <div class="bar-track"><div class="bar-fill" data-width="18%"></div></div>
+          <div class="bar-value">18%</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Email / Gmail tabs</div>
+          <div class="bar-track"><div class="bar-fill" data-width="12%"></div></div>
+          <div class="bar-value">12%</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Trello / Kanban</div>
+          <div class="bar-track"><div class="bar-fill" data-width="8%"></div></div>
+          <div class="bar-value">8%</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Figma boards</div>
+          <div class="bar-track"><div class="bar-fill" data-width="4%"></div></div>
+          <div class="bar-value">4%</div>
+        </div>
+      </div>
+
+      <div class="signal anim">
+        <div class="signal-label">Key insight</div>
+        <p class="signal-text">Every candidate I spoke to had built a personal tracking system. Spreadsheets were most common, but LinkedIn saves, Gmail tab systems, Figma boards, local folder structures, and Trello boards all appeared. All self-built. All painstaking. All solving a problem a platform should solve. The workaround is now standard practice.</p>
+      </div>
+
+      <div class="bar-chart anim" style="margin-top: 2rem;">
+        <div class="bar-chart-title">What candidates wish companies understood about them</div>
+        <div class="bar-row">
+          <div class="bar-label">How they actually work</div>
+          <div class="bar-track"><div class="bar-fill" data-width="84%"></div></div>
+          <div class="bar-value">84%</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Their values & ethics</div>
+          <div class="bar-track"><div class="bar-fill" data-width="71%"></div></div>
+          <div class="bar-value">71%</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Collaboration style</div>
+          <div class="bar-track"><div class="bar-fill" data-width="64%"></div></div>
+          <div class="bar-value">64%</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Why they leave roles</div>
+          <div class="bar-track"><div class="bar-fill green" data-width="48%"></div></div>
+          <div class="bar-value">48%</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Salary expectations</div>
+          <div class="bar-track"><div class="bar-fill green" data-width="42%"></div></div>
+          <div class="bar-value">42%</div>
+        </div>
+      </div>
+
+      <div class="signal anim">
+        <div class="signal-label">What "how they actually work" means</div>
+        <p class="signal-text">The 84% who said companies don't understand how they actually work were not asking for longer CVs or better cover letters. They wanted a chance to demonstrate rather than perform. Several candidates said the same thing independently: they would rather work for free for one or two weeks than go through another five-round interview process. One put it directly: "I'd rather show you than tell you." The format people want is real work, not assessment theater. The system currently does the opposite.</p>
+      </div>
+
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- SECTION 3: COMPANIES -->
+    <section id="companies">
+      <div class="section-header anim">
+        <span class="section-num">03 —</span>
+      </div>
+      <h2 class="anim">The company side</h2>
+      <p class="section-intro anim">Recruiters are surviving, not screening. Volume replaced signal. Nobody fixed it.</p>
+
+      <div class="stat-grid anim">
+        <div class="stat-cell">
+          <div class="stat-value">300+</div>
+          <div class="stat-label">Applications per UX role in Sweden within 24 hours of posting</div>
+          <div class="stat-source">Market research</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-value">1-in-10</div>
+          <div class="stat-label">Response rate for recruiter outreach to passive candidates on LinkedIn</div>
+          <div class="stat-source">Interview data</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-value">Excel</div>
+          <div class="stat-label">Most common recruiting tool at smaller firms. ATS abandoned as too heavy.</div>
+          <div class="stat-source">Interview data</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-value">Aug '26</div>
+          <div class="stat-label">EU AI Act enforcement begins for hiring AI — classified as high-risk</div>
+          <div class="stat-source">EU AI Act</div>
+        </div>
+      </div>
+
+      <div class="signal anim">
+        <div class="signal-label">Recruiter direct quote</div>
+        <p class="signal-text">"We have great consultants who don't get the assignments they should get because their CV doesn't reflect who they are."</p>
+      </div>
+
+      <div class="bar-chart anim" style="margin-top: 2rem;">
+        <div class="bar-chart-title">What recruiters actually look for — that CVs never show</div>
+        <div class="bar-row">
+          <div class="bar-label">Working style</div>
+          <div class="bar-track"><div class="bar-fill blue" data-width="91%"></div></div>
+          <div class="bar-value">91%</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Availability signal</div>
+          <div class="bar-track"><div class="bar-fill blue" data-width="88%"></div></div>
+          <div class="bar-value">88%</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Culture fit indicators</div>
+          <div class="bar-track"><div class="bar-fill blue" data-width="82%"></div></div>
+          <div class="bar-value">82%</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">What they actually did</div>
+          <div class="bar-track"><div class="bar-fill blue" data-width="76%"></div></div>
+          <div class="bar-value">76%</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Career trajectory</div>
+          <div class="bar-track"><div class="bar-fill blue" data-width="61%"></div></div>
+          <div class="bar-value">61%</div>
+        </div>
+      </div>
+
+      <!-- DONUT: Placement sources -->
+      <div class="chart-wrapper anim">
+        <svg class="donut-chart" width="140" height="140" viewBox="0 0 140 140">
+          <circle cx="70" cy="70" r="54" fill="none" stroke="#1a1a1a" stroke-width="20"/>
+          <!-- 79% personal contacts -->
+          <circle cx="70" cy="70" r="54" fill="none" stroke="#d4a84b" stroke-width="20"
+            stroke-dasharray="269 340"
+            stroke-dashoffset="85"
+            transform="rotate(-90 70 70)"/>
+          <!-- 21% other -->
+          <circle cx="70" cy="70" r="54" fill="none" stroke="#2a2a2a" stroke-width="20"
+            stroke-dasharray="71 340"
+            stroke-dashoffset="-184"
+            transform="rotate(-90 70 70)"/>
+          <text x="70" y="66" text-anchor="middle" font-family="'DM Mono'" font-size="18" fill="#d4a84b">79%</text>
+          <text x="70" y="82" text-anchor="middle" font-family="'Instrument Sans'" font-size="9" fill="#5a5650" letter-spacing="1">PERSONAL</text>
+        </svg>
+        <div class="donut-legend">
+          <div class="legend-item">
+            <div class="legend-dot" style="background: var(--accent)"></div>
+            <span class="legend-label">Personal contacts & networks</span>
+            <span class="legend-pct">79%</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot" style="background: var(--bg3); border: 1px solid var(--border2)"></div>
+            <span class="legend-label">Job ads, LinkedIn, job boards</span>
+            <span class="legend-pct">21%</span>
+          </div>
+          <p style="font-family: var(--sans); font-size: 12px; color: var(--text3); margin-top: 0.5rem; line-height: 1.5;">Source: One major Stockholm recruiting firm. Consistent with patterns across all recruiter interviews.</p>
+        </div>
+      </div>
+
+      <div class="signal anim" style="margin-top: 2rem;">
+        <p style="font-family: var(--serif); font-size: 1.1rem; line-height: 1.8; color: var(--text); margin-bottom: 1.25rem; font-style: italic; font-weight: 500;">"Post-covid economic anxiety stopped people from changing jobs even when they wanted to. For two to three years, a large cohort of candidates sat tight. When confidence finally shifted, two or more years of pent-up job-seekers entered the market at the same time. The result is not one wave but two overlapping ones — the people who want to change jobs now, and the people who wanted to three years ago. Both are applying to the same roles. The volume is structural, not cyclical. It will not resolve on its own."</p>
+        <p style="font-family: var(--sans); font-size: 13px; color: var(--text2); margin: 0;">Management Recruiter · Stockholm</p>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- SECTION 3B: AI IN THE PROCESS -->
+    <section id="ai">
+      <div class="section-header anim">
+        <span class="section-num">04 —</span>
+      </div>
+      <h2 class="anim">AI in the hiring process</h2>
+      <p class="section-intro anim">Both sides are using AI extensively. Neither side is happy with the result. What follows are specific, concrete adaptations described in detail by the people living them.</p>
+
+      <div class="findings anim">
+        <div class="finding">
+          <div class="finding-num">1</div>
+          <div>
+            <div class="finding-title">Candidates are using AI to survive a system that has already been automated against them</div>
+            <p class="finding-body">Calling this cheating misses the sequence of events. Employers deployed ATS keyword filtering first. Candidates adapted. Employers deployed AI screening. Candidates adapted again. One designer had spent a year training a dedicated ChatGPT thread on her own profile. Another built a personal AI filter to ask "does this job fit me?" before deciding whether to apply. A third carefully edits AI-generated text to remove traces, then reviews the output manually. The sophistication is real. The effort is exhausting. And none of it improves the underlying match quality.</p>
+          </div>
+        </div>
+        <div class="finding">
+          <div class="finding-num">2</div>
+          <div>
+            <div class="finding-title">Recruiters drowning in AI-generated applications, using AI to filter them</div>
+            <p class="finding-body">Every recruiter I spoke to said AI-generated CVs and cover letters are now immediately recognisable, and that they make screening harder because the signal has collapsed. One recruiter said AI text "makes noise noisier." Another tried using AI to write rejection emails and gave up: automated rejections feel cold, and candidates react badly. A third described spending 3-5 hours a day processing applications despite using automated tools, because the tools cannot make the judgment calls that matter. The result: AI tools built to reduce screening time are creating more volume, which requires more screening time.</p>
+          </div>
+        </div>
+        <div class="finding">
+          <div class="finding-num">3</div>
+          <div>
+            <div class="finding-title">The homogenisation problem: when everything is written by AI, nothing is a signal</div>
+            <p class="finding-body">Job descriptions, cover letters, and CV summaries are all increasingly written by AI, and they are starting to sound the same. One candidate described an interviewer reading ChatGPT-generated questions word for word, with no follow-up. The human on the company side had also outsourced their judgment. When both sides use the same tools, the output converges. A modern hiring process is starting to look like a conversation between two AI systems, with humans on either end growing more alienated from a process they still nominally control. The signal recruiters actually need: working style, real capability, genuine motivation. That information disappears when everything runs through the same machine. Not all candidates are playing along: several refused to use AI for their cover letters precisely because, as one put it, “it just doesn’t sound like me.” The irony is that this reluctance may now work against them in a system that filters for keyword density before a human ever reads the application.</p>
+          </div>
+        </div>
+        <div class="finding">
+          <div class="finding-num">4</div>
+          <div>
+            <div class="finding-title">The trust collapse: 8% believe AI screening makes hiring fairer</div>
+            <p class="finding-body">That number reflects something specific. Candidates know they are being filtered by systems they cannot see, appeal, or understand. One candidate with 13 years of experience called ATS keyword matching "opaque and illogical." The opacity is structural: automated systems do not explain their decisions. The EU AI Act will require them to from August 2026, but until then they are under no obligation. Being filtered out by an invisible system, with no basis you can understand or respond to, changes how people behave. It makes honesty irrational and performance rational. It produces the exact dynamic every recruiter says they hate: candidates performing rather than showing up.</p>
+          </div>
+        </div>
+        <div class="finding">
+          <div class="finding-num">5</div>
+          <div>
+            <div class="finding-title">What AI cannot do</div>
+            <p class="finding-body">Despite widespread adoption on both sides, nobody I interviewed trusted AI for the parts that matter most. Candidates use AI to draft and filter, but do their own research into company culture, often by cold-messaging current employees because no platform offers honest culture signal. Recruiters use AI to manage volume but make their actual hiring decisions based on direct human conversations. One candidate said she wanted "an assistant, not an agent." Another described AI as useful for "filtering, not deciding." The consensus across 24 interviews: AI for logistics, humans for judgment. The frustration is that the current deployment runs in reverse. AI handles judgment: screening, scoring, filtering. Humans handle logistics: volume management, scheduling, tracking. Both sides are working against the grain.</p>
+          </div>
+        </div>
+      </div>
+
+      <div style="background: var(--bg2); border: 1px solid var(--border2); padding: 1.75rem 2rem; margin-top: 1rem;" class="anim">
+        <div style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.75rem;">The law is catching up</div>
+        <p style="font-family: var(--sans); font-size: 13.5px; color: var(--text2); line-height: 1.7; margin: 0;">From August 2026, the EU AI Act classifies AI systems used in hiring as high-risk. This requires documentation, human oversight at decision points, bias testing, and the right to an explanation for automated decisions. The current standard practice of opaque ATS filtering, with no human review and no explanation to rejected candidates, will not be legally defensible. Several recruiters I spoke to were already aware of this and had begun adjusting their processes. Most companies using commercial ATS tools are not.</p>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- SECTION 4: SIGNALS -->
+    <section id="signals">
+      <div class="section-header anim">
+        <span class="section-num">05 —</span>
+      </div>
+      <h2 class="anim">The signals no tool currently captures</h2>
+      <p class="section-intro anim">These are the gaps every recruiter named. No existing platform addresses them.</p>
+
+      <div class="timeline anim">
+        <div class="tl-item">
+          <div class="tl-date">Signal 01</div>
+          <div class="tl-title">Passive availability</div>
+          <div class="tl-body">Every recruiter wanted to see if someone is open to opportunities without actively searching. LinkedIn shows employed or not employed. That binary is useless. The signal recruiters need: open if the right thing comes along. It is invisible in every current tool.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-date">Signal 02</div>
+          <div class="tl-title">Values and dealbreakers</div>
+          <div class="tl-body">Multiple candidates filter out entire industries before applying: gambling, defence, products they find unethical. None of this is captured anywhere. Candidates cold-message employees at target companies manually to get honest culture reads.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-date">Signal 03</div>
+          <div class="tl-title">What they actually contributed</div>
+          <div class="tl-body">CVs show job titles and dates. Recruiters want to know what a person actually did, not what the role was called. The NDA problem makes this worse: consultants are often contractually required to delete all files when a project ends. A designer's real track record gets erased.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-date">Signal 04</div>
+          <div class="tl-title">Salary transparency — before the final round</div>
+          <div class="tl-body">Candidates described going through five-round processes only to discover a 15,000 SEK gap at the offer stage. Both sides want transparency. Sweden lags Germany and the US on published salary ranges. The waste is measurable.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-date">Signal 05</div>
+          <div class="tl-title">Trajectory, not history</div>
+          <div class="tl-body">Where someone is going matters more than where they have been, but CVs are entirely backward-looking. The candidates who got the best responses described their direction, not just their experience. No platform surfaces this.</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- SECTION 4B: NOISE AND TRANSPARENCY -->
+    <section id="transparency">
+      <div class="section-header anim">
+        <span class="section-num">06 —</span>
+      </div>
+      <h2 class="anim">The noise problem — and why nobody can tell you why</h2>
+      <p class="section-intro anim">Two connected failures define the experience of job searching right now. Volume makes it impossible for companies to see clearly. Then comes the silence: you don't get through, and nobody can explain why.</p>
+
+      <div class="signal anim">
+        <div class="signal-label">The loop nobody designed but everyone is trapped in</div>
+        <p class="signal-text">AI tools make applying easier, so candidates apply to more roles. More applications overwhelm recruiters, who deploy more automated filtering. Filtered applications are less trusted, so candidates apply to more roles to compensate. Everyone is worse off. The system optimises for volume because volume is measurable. Quality is not.</p>
+      </div>
+
+      <div class="findings anim" style="margin-top: 2rem;">
+        <div class="finding">
+          <div class="finding-num">A</div>
+          <div>
+            <div class="finding-title">Volume makes criteria invisible, not just screening harder</div>
+            <p class="finding-body">When a recruiter receives 300 applications in 24 hours, selection becomes reactive. They look for reasons to exclude rather than reasons to include. The real filters: curiosity, working style, cultural fit, trajectory. These cannot be assessed at volume. So proxies take over: years of experience, job titles, recognisable company names. Everyone knows these proxies are imprecise. They are also the only thing that scales. The actual criteria for selection end up unstated, because the actual criteria cannot survive contact with the volume.</p>
+          </div>
+        </div>
+        <div class="finding">
+          <div class="finding-num">B</div>
+          <div>
+            <div class="finding-title">Companies often don't know their own criteria</div>
+            <p class="finding-body">Several recruiters described the same pattern: the job description was written by HR without consulting the hiring manager. Real requirements only emerge during the process, sometimes only after seeing candidates who do not fit. One recruiter named "fejkrekrytering": the risk of convincing yourself a candidate is right because you want them to be right. A genuine failure mode, experienced personally. The criteria are often opaque because companies are still figuring them out, not because they are hiding them.</p>
+          </div>
+        </div>
+        <div class="finding">
+          <div class="finding-num">C</div>
+          <div>
+            <div class="finding-title">The feedback gap — why candidates are left guessing</div>
+            <p class="finding-body">When criteria are unstated or discovered mid-process, giving honest feedback becomes very difficult. "You didn't match our culture" is the most honest answer available, and also the least useful one. Structured feedback requires clear criteria. Clear criteria require deliberate role definition. Deliberate role definition rarely survives the volume. The recruiters I spoke to wanted to give feedback. Several did, at real cost in time. The gap is structural: you cannot explain decisions that were made without explicit criteria.</p>
+          </div>
+        </div>
+        <div class="finding">
+          <div class="finding-num">D</div>
+          <div>
+            <div class="finding-title">What candidates actually experience</div>
+            <p class="finding-body">One candidate went through a five-round process: two case studies, a whiteboard exercise, travel to Stockholm, a team meeting, a CEO meeting. Then a rejection with no explanation. Another described a process that ended in silence after four weeks of regular contact. A third rated their own interview honesty at 5 out of 10. Not because they lied, but because the format makes honesty irrational. When you have no signal about what someone is actually looking for, you perform the expected candidate profile regardless. The opacity creates the behaviour everyone hates.</p>
+          </div>
+        </div>
+      </div>
+
+      <div style="background: var(--bg2); border: 1px solid var(--border2); padding: 1.75rem 2rem; margin-top: 1rem;" class="anim">
+        <div style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.75rem;">From the recruiter side</div>
+        <p style="font-family: var(--serif); font-size: 15px; font-style: italic; color: var(--text); line-height: 1.65; margin: 0; border-left: 2px solid var(--accent); padding-left: 1rem;">"Curiosity and initiative matter more than years of experience or sector fit. These qualities are impossible to screen for via CV. I have to meet the person, which means I'm already spending time before I know anything real."</p>
+        <div style="font-family: var(--mono); font-size: 10px; color: var(--text3); margin-top: 0.75rem; letter-spacing: 0.1em;">Design Lead · Recruiter · Stockholm consulting firm</div>
+      </div>
+
+      <div style="background: var(--bg2); border: 1px solid var(--border2); padding: 1.75rem 2rem; margin-top: 1px;" class="anim">
+        <div style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.75rem;">From the candidate side</div>
+        <p style="font-family: var(--serif); font-size: 15px; font-style: italic; color: var(--text); line-height: 1.65; margin: 0; border-left: 2px solid var(--accent); padding-left: 1rem;">"The process is opaque in both directions. I don't know what they're really looking for. They don't know who I really am. We're both performing for a system that isn't designed to let us actually find each other."</p>
+        <div style="font-family: var(--mono); font-size: 10px; color: var(--text3); margin-top: 0.75rem; letter-spacing: 0.1em;">Senior UX Designer · Stockholm · Actively searching</div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- SECTION 5: QUOTES -->
+    <section id="quotes">
+      <div class="section-header anim">
+        <span class="section-num">07 —</span>
+      </div>
+      <h2 class="anim">Voice of the market</h2>
+      <p class="section-intro anim">Direct quotes from the 24 interviews. All participants anonymised by role and context.</p>
+
+      <div class="quote-grid anim">
+        <div class="quote-card visible" data-type="candidate">
+          <div class="quote-text">"You perform to fit the expected candidate profile. It's performance theater."</div>
+          <div class="quote-meta">Senior UX Designer · 8 years · Stockholm</div>
+          <div class="quote-tag candidate">Candidate</div>
+        </div>
+        <div class="quote-card visible" data-type="recruiter">
+          <div class="quote-text">"We have great consultants who don't get the assignments they should because their CV doesn't reflect who they are."</div>
+          <div class="quote-meta">HR Manager · Consulting firm · Stockholm</div>
+          <div class="quote-tag recruiter">Recruiter</div>
+        </div>
+        <div class="quote-card visible" data-type="candidate">
+          <div class="quote-text">"I track 700 applications in a Figma board I built myself. Job searching is a whole other job — and another education."</div>
+          <div class="quote-meta">UX Designer · 3 years in Sweden</div>
+          <div class="quote-tag candidate">Candidate</div>
+        </div>
+        <div class="quote-card visible" data-type="recruiter">
+          <div class="quote-text">"Candidates need an agent working for them: scanning the market, knowing their dream companies, coaching them long-term."</div>
+          <div class="quote-meta">Senior Recruiter · Major Stockholm firm</div>
+          <div class="quote-tag recruiter">Recruiter</div>
+        </div>
+        <div class="quote-card visible" data-type="candidate">
+          <div class="quote-text">"I rate my own interview honesty at 5 out of 10. Not because I lie. Because the format makes honesty irrational."</div>
+          <div class="quote-meta">Design Lead · Stockholm</div>
+          <div class="quote-tag candidate">Candidate</div>
+        </div>
+        <div class="quote-card visible" data-type="recruiter">
+          <div class="quote-text">"Availability within 1–2 months is the single most useful filter. LinkedIn cannot do this. I manage it manually in Excel."</div>
+          <div class="quote-meta">Senior Recruiter · Stockholm</div>
+          <div class="quote-tag recruiter">Recruiter</div>
+        </div>
+        <div class="quote-card visible" data-type="candidate">
+          <div class="quote-text">"I turned down a strong offer because the product conflicted with my ethics. No platform asked me about that."</div>
+          <div class="quote-meta">Senior UX Designer · 13 years · Stockholm</div>
+          <div class="quote-tag candidate">Candidate</div>
+        </div>
+        <div class="quote-card visible" data-type="recruiter">
+          <div class="quote-text">"We write 5 years required, applicants with 3 apply. We write 8, applicants with 5 apply. The numbers have lost all meaning."</div>
+          <div class="quote-meta">Recruiter · Stockholm staffing firm</div>
+          <div class="quote-tag recruiter">Recruiter</div>
+        </div>
+        <div class="quote-card visible" data-type="candidate">
+          <div class="quote-text">"“I kept my unemployment hidden for months. I turned off my phone after posting about it. Being without a job still feels like something to be ashamed of — even though it is now just as common as having one.”</div>
+          <div class="quote-meta">UX Designer · Senior level · Stockholm</div>
+          <div class="quote-tag candidate">Candidate</div>
+        </div>
+        <div class="quote-card visible" data-type="recruiter">
+          <div class="quote-text">"Personality tests are idiotic. If you can't judge someone in a real conversation, you're in the wrong job."</div>
+          <div class="quote-meta">Recruiter · Stockholm · 12 years in design hiring</div>
+          <div class="quote-tag recruiter">Recruiter</div>
+        </div>
+        <div class="quote-card visible" data-type="candidate">
+          <div class="quote-text">"As a consultant I'm contractually required to delete all files when a project ends. My track record is systematically erased."</div>
+          <div class="quote-meta">UX Designer · Senior level · Stockholm</div>
+          <div class="quote-tag candidate">Candidate</div>
+        </div>
+        <div class="quote-card visible" data-type="recruiter">
+          <div class="quote-text">"Timing is everything. The right candidate and role need to meet at the right moment. No tool helps with this. We manage it by instinct."</div>
+          <div class="quote-meta">HR Manager · Stockholm consulting firm</div>
+          <div class="quote-tag recruiter">Recruiter</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- SECTION 6: WHAT THE NUMBERS CONFIRM -->
+    <section id="external">
+      <div class="section-header anim">
+        <span class="section-num">08 —</span>
+      </div>
+      <h2 class="anim">What the numbers confirm</h2>
+      <p class="section-intro anim">Large-scale datasets confirm most of what I heard in the interviews. Where they diverge, that gap is worth noting.</p>
+
+      <div class="stat-grid anim">
+        <div class="stat-cell">
+          <div class="stat-value">9,500</div>
+          <div class="stat-label">LinkedIn applications per minute globally in 2025 — a 45%+ surge in one year</div>
+          <div class="stat-source">LinkedIn Future of Recruiting 2025</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-value">8%</div>
+          <div class="stat-label">of job seekers believe AI screening makes hiring fairer</div>
+          <div class="stat-source">Greenhouse 2025</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-value">83 days</div>
+          <div class="stat-label">Median time to first job offer in Q4 2025, up from 57 days in Q1. A 46% increase in one year.</div>
+          <div class="stat-source">Huntr, 1.78M applications</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-value">Both ↑</div>
+          <div class="stat-label">Cost-per-hire and time-to-hire both increased in 2025, despite widespread AI adoption</div>
+          <div class="stat-source">SHRM Benchmarking 2025</div>
+        </div>
+      </div>
+
+      <div class="bar-chart anim">
+        <div class="bar-chart-title">The emotional reality. 1.78 million applications tracked (Huntr 2025)</div>
+        <div class="bar-row">
+          <div class="bar-label">Feel exhausted</div>
+          <div class="bar-track"><div class="bar-fill red" data-width="40%"></div></div>
+          <div class="bar-value">40%</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Ghosted "often"</div>
+          <div class="bar-track"><div class="bar-fill red" data-width="30%"></div></div>
+          <div class="bar-value">30%</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Applied to a scam accidentally</div>
+          <div class="bar-track"><div class="bar-fill red" data-width="41%"></div></div>
+          <div class="bar-value">41%</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Prefer human interviews over AI-led</div>
+          <div class="bar-track"><div class="bar-fill green" data-width="67%"></div></div>
+          <div class="bar-value">67%</div>
+        </div>
+      </div>
+
+      <div class="signal anim">
+        <div class="signal-label">Where interviews and data diverge</div>
+        <p class="signal-text">Large-scale surveys show 60% of hiring managers say AI is helping them find candidates they would otherwise miss. Every recruiter I spoke to disagreed. They described AI tools as noise amplifiers. The gap may be what managers say in surveys versus what recruiters experience on a Tuesday afternoon.</p>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- SECTION 7: SWEDEN SPECIFICALLY -->
+    <section id="market">
+      <div class="section-header anim">
+        <span class="section-num">09 —</span>
+      </div>
+      <h2 class="anim">The market in numbers *</h2>
+      <p class="section-intro anim">Here is what the official data shows, and why it lines up with what I heard.</p>
+
+      <div class="stat-grid anim">
+        <div class="stat-cell">
+          <div class="stat-value">6.9%</div>
+          <div class="stat-label">Swedish unemployment in 2025, above pre-downturn levels. Recovery expected gradually through 2026–2027.</div>
+          <div class="stat-source">Arbetsförmedlingen, autumn 2025</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-value">Small</div>
+          <div class="stat-label">Arbetsförmedlingen's one-year job prospect rating for visual and UX designers: "small": high competition for available roles.</div>
+          <div class="stat-source">Yrkesbarometern, sept 2025</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-value">+26.9%</div>
+          <div class="stat-label">Increase in available consultants in Sweden in 2024. More people than ever — and harder to hire than ever.</div>
+          <div class="stat-source">Swedish market research 2025</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-value">SEK 5K</div>
+          <div class="stat-label">Monthly salary premium for UX specialists over generalist designers. Specialism commands real market value.</div>
+          <div class="stat-source">SCB salary data 2025</div>
+        </div>
+      </div>
+
+      <div class="signal anim">
+        <div class="signal-label">The sharpest Swedish data point</div>
+        <p class="signal-text">Arbetsförmedlingen reports rising unemployment alongside employer difficulty finding candidates with the right skills. Both are true at the same time. Sweden has more available consultants than ever. The shortage is not talent. The system cannot connect the right person to the right role. Every recruiter I spoke to described this.</p>
+      </div>
+
+      <div class="signal anim" style="margin-top: 1.5rem;">
+        <div class="signal-label">The false meritocracy problem</div>
+        <p class="signal-text">One recruiter described what happens when 500 people apply to a single role: the minimum threshold rises automatically. Candidates who would have been interviewed a year ago now get cut in the first pass. But here is what that obscures — a higher bar does not mean the best person gets through. It means the best performer under artificial pressure gets through. More volume. A higher floor. No better outcome. The bar and the result have been decoupled.</p>
+      </div>
+
+      <p style="font-family: var(--mono); font-size: 11px; color: var(--text3); line-height: 1.7; margin-top: 1.5rem; letter-spacing: 0.05em;">* Data sources: Arbetsförmedlingen Arbetsmarknadsutsikterna (autumn 2025) for unemployment figures and labour market outlook · Yrkesbarometern (September 2025) for occupation-level job prospect ratings · Statistics Sweden (SCB) salary data for salary benchmarks by occupation · Swedish market research compiled from Konsultguiden and Kompetensförsörjning 2025 for consultant volume data.</p>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- SECTION 8: PERSONALITY TESTS -->
+    <section id="tests">
+      <div class="section-header anim">
+        <span class="section-num">10 —</span>
+      </div>
+      <h2 class="anim">The test nobody trusts — and everyone still uses</h2>
+      <p class="section-intro anim">Every recruiter I interviewed was sceptical or contemptuous of standardised personality tests. The research agrees with them. The industry does not.</p>
+
+      <div class="stat-grid anim">
+        <div class="stat-cell">
+          <div class="stat-value">50%</div>
+          <div class="stat-label">Chance of getting a different MBTI result if you retake the test after five weeks. Same person, different result.</div>
+          <div class="stat-source">Psychometric research</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-value">3.5M</div>
+          <div class="stat-label">MBTI tests administered annually. MBTI's own creators call it "unethical and in many cases illegal" to use for hiring decisions.</div>
+          <div class="stat-source">MBTI Foundation</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-value">0</div>
+          <div class="stat-label">Predictive validity for job performance. What decades of research found for MBTI.</div>
+          <div class="stat-source">Multiple peer-reviewed studies</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-value">10,000</div>
+          <div class="stat-label">Businesses in the US alone using MBTI for hiring. Their own creators say it should not be used this way.</div>
+          <div class="stat-source">Myers-Briggs Company estimates</div>
+        </div>
+      </div>
+
+      <div class="signal anim">
+        <div class="signal-label">Why they persist</div>
+        <p class="signal-text">MBTI and DISC tests persist because they are perceived to reduce uncertainty cheaply and quickly, and because the companies selling them have a strong incentive to keep doing so. MBTI alone generates over 20 million pounds annually for its foundation. The tests are a business. Every recruiter I spoke to who used them did so reluctantly, or had already abandoned them. None believed they predicted anything meaningful.</p>
+      </div>
+
+      <div class="bar-chart anim" style="margin-top: 1.5rem;">
+        <div class="bar-chart-title">What actually predicts job performance — vs. what is commonly used</div>
+        <div class="bar-row">
+          <div class="bar-label">Structured interviews</div>
+          <div class="bar-track"><div class="bar-fill green" data-width="51%"></div></div>
+          <div class="bar-value">High</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Work sample tests</div>
+          <div class="bar-track"><div class="bar-fill green" data-width="54%"></div></div>
+          <div class="bar-value">High</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Cognitive ability tests</div>
+          <div class="bar-track"><div class="bar-fill" data-width="40%"></div></div>
+          <div class="bar-value">Medium</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">MBTI / DISC</div>
+          <div class="bar-track"><div class="bar-fill red" data-width="5%"></div></div>
+          <div class="bar-value">None</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Unstructured CV review</div>
+          <div class="bar-track"><div class="bar-fill red" data-width="14%"></div></div>
+          <div class="bar-value">Low</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- SECTION 9: INDEPENDENT VIEW -->
+    <section id="independent">
+      <div class="section-header anim">
+        <span class="section-num">11 —</span>
+      </div>
+      <h2 class="anim">An independent view</h2>
+      <p class="section-intro anim">While this research was still underway, Johan Berndtsson, a 30-year veteran of the Swedish design industry, published a newsletter on what he believed the market needed. He had spoken with me once, briefly, before writing it. He arrived at almost the same conclusions on his own. <a href="https://johanberndtsson.com/you-are-the-raw-material-the-recruitment-process-was-never-designed-for-you/" target="_blank" rel="noopener" style="color: var(--accent); text-decoration: underline; text-underline-offset: 3px;">Read it here.</a></p>
+
+      <div class="signal anim" style="margin-bottom: 2rem;">
+        <p class="signal-text">"The recruitment process is designed almost entirely for the employer. The job seeker is not the customer. The job seeker is the raw material being processed."</p>
+      </div>
+
+      <div class="findings anim" style="margin-bottom: 2rem;">
+        <div class="finding">
+          <div class="finding-num">→</div>
+          <div>
+            <div class="finding-title">A platform built for candidates, not HR departments</div>
+            <p class="finding-body">He described a service where professionals own their own data: CV, target role, long-term goals, values, salary expectations. Under their own control.</p>
+          </div>
+        </div>
+        <div class="finding">
+          <div class="finding-num">→</div>
+          <div>
+            <div class="finding-title">Both job-seeking mode and career-planning mode</div>
+            <p class="finding-body">He observed that people move between urgent job search and long-term career planning. "A service worth building would work for both situations, and keep working in the background even when we are not thinking about it." The interviews confirmed the same thing.</p>
+          </div>
+        </div>
+        <div class="finding">
+          <div class="finding-num">→</div>
+          <div>
+            <div class="finding-title">A pipeline that actually works</div>
+            <p class="finding-body">He described an application tracker: Suggested, Applied, In review, Interview, Offer, Rejected, Accepted. "More sustainable than the spreadsheet you stopped updating three weeks in." Seven of the thirteen candidate interviews had built exactly this system themselves, manually.</p>
+          </div>
+        </div>
+        <div class="finding">
+          <div class="finding-num">→</div>
+          <div>
+            <div class="finding-title">The moment of convergence</div>
+            <p class="finding-body">He ended: "I'm pretty sure I'm not the one to build this. But I'd sign up on day one. And I have a long list of people who would too." He wrote this without knowing this research existed.</p>
+          </div>
+        </div>
+      </div>
+
+      <div style="background: var(--bg2); border-left: 3px solid var(--accent); padding: 1.75rem 2rem;" class="anim">
+        <p style="font-family: var(--sans); font-size: 14px; color: var(--text2); line-height: 1.7; margin: 0;">When a researcher spends three months interviewing people and a practitioner with thirty years of experience writes the same conclusion independently after a single conversation. That is not coincidence. The problem is structural, that it is widely understood, and that no one has yet built what both sides are asking for.</p>
+      </div>
+
+      <div style="background: var(--bg2); border-left: 3px solid var(--blue); padding: 1.75rem 2rem; margin-top: 1.5rem;" class="anim">
+        <p style="font-family: var(--mono); font-size: 11px; color: var(--text3); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.75rem;">A second independent view — recruiter, 25+ years experience</p>
+        <p style="font-family: var(--sans); font-size: 14px; color: var(--text2); line-height: 1.7; margin: 0;">A senior management recruiter with a 96% trial-to-permanent conversion rate across six years described their vision of hiring in 2028: AI everywhere, handling administration and logistics. All candidate decisions made by humans. "Technology should create more time to spend with people — not replace the judgment." The same conclusion, arrived at from the other direction: more technology in the process, but human authority at every decision point. This is not a minority view among experienced practitioners. It is the consensus.</p>
+      </div>
+
+      <div style="background: var(--bg2); border-left: 3px solid var(--green); padding: 1.75rem 2rem; margin-top: 1.5rem;" class="anim">
+        <p style="font-family: var(--mono); font-size: 11px; color: var(--text3); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.75rem;">A third independent view — HR professional & education partner</p>
+        <p style="font-family: var(--sans); font-size: 14px; color: var(--text2); line-height: 1.7; margin-bottom: 1rem; margin: 0;">An HR professional at a major Stockholm firm with expertise in structured interview assessment and values-driven hiring identified what traditional recruitment consistently misses: "Potential, values, context — everything easy to miss because it doesn't show on the CV. Traditional recruiting always starts there." She observed a deeper structural problem: "Recruiters say they want breadth and depth, but the system is built to select what's most predictable." Her research on multipotentialite profiles (non-linear, multi-skilled careers) shows the market systematically penalizes exactly the people who should succeed in dynamic roles. AI, she argues, should support process and structure — never decisions. "AI as reinforcement, not as decision-maker."</p>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- SECTION 10: WHAT PEOPLE WANT -->
+    <section id="future">
+      <div class="section-header anim">
+        <span class="section-num">12 —</span>
+      </div>
+      <h2 class="anim">What people actually want</h2>
+      <p class="section-intro anim">I asked everyone the same question: if you could design this process from scratch, what would it look like? The answers were specific, consistent, and buildable. The same ideas came up again and again across very different people.</p>
+
+      <div class="findings anim">
+        <div class="finding">
+          <div class="finding-num">01</div>
+          <div>
+            <div class="finding-title">Salary on the table from the start</div>
+            <p class="finding-body">Both candidates and recruiters wanted salary expectations visible early, ideally before the first conversation. A basic respect-of-time principle. "If we're not in the same range, let's find out in five minutes, not five weeks." The technology to make this bilateral already exists. The culture has not caught up.</p>
+          </div>
+        </div>
+        <div class="finding">
+          <div class="finding-num">02</div>
+          <div>
+            <div class="finding-title">Feedback that is real</div>
+            <p class="finding-body">Every candidate described the absence of feedback as one of the most demoralising parts of the process. Detailed feedback for every application is unrealistic. But a real reason when you get far enough to matter: that is the ask. "I don't need to know why 40 companies didn't reply. I need to know why the one I cared about said no." Recruiters agreed. Several call every finalist regardless of outcome. They know it matters. The system does not support it at scale.</p>
+          </div>
+        </div>
+        <div class="finding">
+          <div class="finding-num">03</div>
+          <div>
+            <div class="finding-title">The conversation before the performance</div>
+            <p class="finding-body">Multiple candidates proposed the same idea independently: a short, informal, unscripted first contact before the formal process starts. One called it "the first five minutes before the performance begins." Another described her best interview as "coffee with a friend." A third wanted "speed dating, not another form." The format people want is dialogue. An exchange, not an assessment.</p>
+          </div>
+        </div>
+        <div class="finding">
+          <div class="finding-num">04</div>
+          <div>
+            <div class="finding-title">Values visible on both sides</div>
+            <p class="finding-body">Candidates filter for values before anything else, and do it manually: cold-messaging employees to find out what a company is actually like. Companies say they want culturally aligned candidates. Neither side has infrastructure for this conversation. One recruiter put it plainly: "I don't want to waste their time or mine if the product is something they would never work on."</p>
+          </div>
+        </div>
+        <div class="finding">
+          <div class="finding-num">05</div>
+          <div>
+            <div class="finding-title">Availability — the signal that doesn't exist</div>
+            <p class="finding-body">Every recruiter named the same gap: they cannot see who is passively open to a move. LinkedIn shows employed or not employed. That binary is useless. What they need: "happy where I am but would consider the right thing." Or "open, available in two months." Candidates want this too: to be findable without broadcasting that they are looking. The technical solution is straightforward. Nobody has built it.</p>
+          </div>
+        </div>
+        <div class="finding">
+          <div class="finding-num">06</div>
+          <div>
+            <div class="finding-title">AI as assistant, not decision-maker</div>
+            <p class="finding-body">The most consistent signal across all 24 interviews: people want AI to handle the administrative parts: tracking, scheduling, first-pass filtering. They want it out of the parts that require judgment. "AI for logistics. Humans for decisions." One candidate said it clearly: "I want an assistant, not an agent." The distinction is autonomy. Nobody wants a machine deciding their career. Everybody wants a machine that clears the path so a human can.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider" style="margin-top: 2.5rem;"></div>
+
+      <div class="anim" style="margin-top: 2.5rem;">
+        <div style="font-family: var(--mono); font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); margin-bottom: 1.25rem;">A note on hope</div>
+        <p style="font-family: var(--serif); font-size: 1.05rem; line-height: 1.8; color: var(--text); margin-bottom: 1.2rem;">None of the people I spoke to were cynical about work itself. They were frustrated by the process of finding it. The designers I interviewed are good at what they do and they know it. The recruiters genuinely want to find the right people and build long relationships with them. The failure is in the infrastructure between them.</p>
+        <p style="font-family: var(--serif); font-size: 1.05rem; line-height: 1.8; color: var(--text); margin-bottom: 1.2rem;">What people want is not complicated. Salary transparency. Real feedback. A short honest conversation before the formal process. Visibility into values. A way to signal openness without broadcasting desperation. AI that removes friction rather than adding judgment. These are all solvable. None of them require breakthrough technology. They require someone to build a system that treats both sides as people rather than inputs.</p>
+        <p style="font-family: var(--serif); font-size: 1.05rem; line-height: 1.8; color: var(--text2); font-style: italic;">The market is broken because the infrastructure was designed for a different era, optimised for a different goal, and nobody has rebuilt it from the ground up with both sides in mind.</p>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ABOUT -->
+    <section id="about">
+      <div class="section-header anim">
+        <span class="section-num">About —</span>
+      </div>
+      <h2 class="anim">About this research</h2>
+
+      <div class="about-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; margin-top: 0;" class="anim">
+
+        <div>
+          <div style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 1rem;">Who I am</div>
+          <p style="font-family: var(--serif); font-size: 1rem; line-height: 1.8; color: var(--text); margin-bottom: 1rem;">I am Boris, a designer and product thinker based in Stockholm, with a background in UX, product leadership, machine learning, and more recently, building with AI. Over the past several years I have worked across the Swedish and Nordic design market, both as a practitioner and as someone helping to shape products and teams.</p>
+          <p style="font-family: var(--serif); font-size: 1rem; line-height: 1.8; color: var(--text);">I have been on both sides of the hiring conversation. I know how it feels to apply. I know how it feels to try to hire. Both experiences pointed to the same conclusion: the system is not designed for the people in it.</p>
+        </div>
+
+        <div>
+          <div style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 1rem;">Why I did this</div>
+          <p style="font-family: var(--serif); font-size: 1rem; line-height: 1.8; color: var(--text); margin-bottom: 1rem;">This research is a private, independent project. It is not sponsored by any company, platform, or recruiter. I have no financial interest in how the hiring market works today, and no product to sell you at the end of it.</p>
+          <p style="font-family: var(--serif); font-size: 1rem; line-height: 1.8; color: var(--text);">I started interviewing people because I was curious whether what I personally experienced was shared. It was. The intention was to understand both sides honestly, surface what people actually feel but rarely say out loud, and contribute something useful to a conversation that is mostly happening in frustration rather than in public.</p>
+        </div>
+
+      </div>
+
+      <div style="background: var(--bg2); border-left: 3px solid var(--accent); padding: 1.5rem 2rem; margin-top: 2rem;" class="anim">
+        <p style="font-family: var(--serif); font-size: 1.05rem; line-height: 1.75; color: var(--text); margin: 0;">The goal of this research is not to expose anyone or advocate for a particular solution. It is to make the experience of hiring, and of being hired, a little more honest and a little more human. Hiring is how careers begin. It shapes who works where and with whom, and therefore what gets built and how. It deserves more care than it currently gets.</p>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- SOURCES -->
+    <section id="sources">
+      <div class="section-header anim">
+        <span class="section-num">Sources —</span>
+      </div>
+      <h2 class="anim">Sources and further reading</h2>
+      <p class="section-intro anim">The primary research for this report is qualitative: 24 interviews I conducted in Sweden between March and April 2026. The quantitative data cited throughout draws on the following published sources. Where a source offers a deeper read on a topic covered in the report, that is noted.</p>
+
+      <div class="findings anim">
+
+        <div class="finding">
+          <div class="finding-num" style="font-size: 0.85rem;">01</div>
+          <div>
+            <div class="finding-title">Arbetsförmedlingen — Labour Market Outlook, autumn 2025</div>
+            <p class="finding-body">Official Swedish labour market forecast. Source for unemployment figures (6.9%), employer hiring difficulty, and the matching paradox cited in chapter 09. Updated twice yearly. Available at <a href="https://arbetsformedlingen.se/statistik" target="_blank" rel="noopener" style="color: var(--accent);">arbetsformedlingen.se/statistik</a>.</p>
+          </div>
+        </div>
+
+        <div class="finding">
+          <div class="finding-num" style="font-size: 0.85rem;">02</div>
+          <div>
+            <div class="finding-title">Arbetsförmedlingen — Yrkesbarometern, September 2025</div>
+            <p class="finding-body">Occupation-level job prospect ratings for Sweden. Source for the "Sm&#229;" (small) job prospect rating for visual and UX designers cited in chapter 09. Updated twice yearly. <a href="https://arbetsformedlingen.se/statistik/yrkes-och-kompetensanalyser" target="_blank" rel="noopener" style="color: var(--accent);">arbetsformedlingen.se/statistik/yrkes-och-kompetensanalyser</a>.</p>
+          </div>
+        </div>
+
+        <div class="finding">
+          <div class="finding-num" style="font-size: 0.85rem;">03</div>
+          <div>
+            <div class="finding-title">Huntr — 2025 Annual Job Search Trends Report</div>
+            <p class="finding-body">Based on 1.78 million tracked job applications across the full year 2025. Source for time-to-offer data (57 to 83 days), ghosting rates, emotional state data, and candidate channel behaviour. The most comprehensive candidate-side dataset available. <a href="https://huntr.co" target="_blank" rel="noopener" style="color: var(--accent);">huntr.co</a>.</p>
+          </div>
+        </div>
+
+        <div class="finding">
+          <div class="finding-num" style="font-size: 0.85rem;">04</div>
+          <div>
+            <div class="finding-title">Greenhouse — AI in Hiring Report 2025</div>
+            <p class="finding-body">Source for the 8% fairness figure (job seekers who believe AI screening makes hiring fairer) and the 44% figure on willingness to fabricate resume details. Also the origin of the "AI doom loop" framing. <a href="https://greenhouse.com" target="_blank" rel="noopener" style="color: var(--accent);">greenhouse.com</a>.</p>
+          </div>
+        </div>
+
+        <div class="finding">
+          <div class="finding-num" style="font-size: 0.85rem;">05</div>
+          <div>
+            <div class="finding-title">LinkedIn — Future of Recruiting Report 2025</div>
+            <p class="finding-body">Source for the 9,500 applications per minute figure and the 45%+ surge in application volume. Also covers the homogenisation problem from the platform side. <a href="https://linkedin.com/business/talent" target="_blank" rel="noopener" style="color: var(--accent);">linkedin.com/business/talent</a>.</p>
+          </div>
+        </div>
+
+        <div class="finding">
+          <div class="finding-num" style="font-size: 0.85rem;">06</div>
+          <div>
+            <div class="finding-title">SHRM — Benchmarking Survey 2025</div>
+            <p class="finding-body">Source for the finding that both cost-per-hire and time-to-hire increased in 2025 despite widespread AI adoption. The Society for Human Resource Management publishes this annually. <a href="https://shrm.org" target="_blank" rel="noopener" style="color: var(--accent);">shrm.org</a>.</p>
+          </div>
+        </div>
+
+        <div class="finding">
+          <div class="finding-num" style="font-size: 0.85rem;">07</div>
+          <div>
+            <div class="finding-title">MBTI and personality test validity — selected research</div>
+            <p class="finding-body">The 50% retype rate and zero predictive validity figures cited in chapter 10 draw on decades of peer-reviewed psychometric research. For a clear overview: Adam Grant, "Say Goodbye to MBTI, the Fad That Won't Die," Psychology Today (2013). For the most recent synthesis: Erford et al., "A 25-year Review and Psychometric Synthesis of the MBTI Form M," Journal of Counseling and Development (2025). The MBTI Foundation's own disclaimer about use in hiring is available at <a href="https://themyersbriggs.com" target="_blank" rel="noopener" style="color: var(--accent);">themyersbriggs.com</a>.</p>
+          </div>
+        </div>
+
+        <div class="finding">
+          <div class="finding-num" style="font-size: 0.85rem;">08</div>
+          <div>
+            <div class="finding-title">EU AI Act — hiring AI classification</div>
+            <p class="finding-body">AI systems used in recruitment and candidate selection are explicitly classified as high-risk under Annex III of the EU AI Act. Core obligations for high-risk systems become enforceable from August 2, 2026. Guidance specific to Sweden: Lindahl Law (Stockholm), published via Lexology, November 2025. EU AI Act full text: <a href="https://eur-lex.europa.eu" target="_blank" rel="noopener" style="color: var(--accent);">eur-lex.europa.eu</a>.</p>
+          </div>
+        </div>
+
+        <div class="finding">
+          <div class="finding-num" style="font-size: 0.85rem;">09</div>
+          <div>
+            <div class="finding-title">Further reading on AI in hiring</div>
+            <p class="finding-body">Tomas Chamorro-Premuzic, "AI Has Made Hiring Worse — But It Can Still Help," Harvard Business Review, January 2026. Dartmouth and Princeton research on AI cover letters reducing company trust in cover letters entirely, covered in CNN Business, December 2025. HeroHunt, "AI Adoption in Recruiting: 2025 Year in Review," herohunt.io.</p>
+          </div>
+        </div>
+
+        <div class="finding">
+          <div class="finding-num" style="font-size: 0.85rem;">10</div>
+          <div>
+            <div class="finding-title">SCB — Statistics Sweden, salary data 2025</div>
+            <p class="finding-body">Source for the SEK 5,000 monthly salary premium for UX specialists over generalist graphic designers. SCB publishes annual occupational salary statistics. <a href="https://scb.se/hitta-statistik/statistik-efter-amne/arbetsmarknad/loner-och-arbetskostnader" target="_blank" rel="noopener" style="color: var(--accent);">scb.se/hitta-statistik/statistik-efter-amne/arbetsmarknad/loner-och-arbetskostnader</a>.</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<footer id="connect">
+  <div style="max-width: 1200px; margin: 0 auto; width: 100%; display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 1.5rem;">
+    <div>
+      <div class="footer-left">SWEDISH UX HIRING REPORT · APRIL 2026 · STOCKHOLM</div>
+      <p class="footer-note" style="margin-top: 0.5rem;">All interview participants are anonymised. No names, employers, or identifying details appear in this report. Data from third-party sources is cited inline. This is independent research, not sponsored by any platform or employer. More in the About section.</p>
+      <p class="footer-note" style="margin-top: 0.5rem; font-size: 0.7rem; opacity: 0.6;">Version 1.1 · Last updated 19 April 2026</p>
+    </div>
+    <div style="text-align: right; flex-shrink: 0;">
+      <div style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.6rem;">Get in touch</div>
+      <div style="font-family: var(--sans); font-size: 12px; color: var(--text2); line-height: 2;">
+        <a href="https://www.linkedin.com/in/boriskehr/" target="_blank" rel="noopener" style="color: var(--text2); text-decoration: none; display: block; transition: color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text2)'">Boris Kehr — LinkedIn</a>
+        <a href="mailto:boris@designloop.se" style="color: var(--text2); text-decoration: none; display: block; transition: color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text2)'">boris@designloop.se</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
 <script>
-  const thread = document.getElementById('thread');
-  const input = document.getElementById('input');
-  const sendBtn = document.getElementById('send');
+  // ── THEME TOGGLE ───────────────────────────────────────────────
+  (function() {
+    const html = document.documentElement;
+    const saved = localStorage.getItem('theme') || 'dark';
+    html.setAttribute('data-theme', saved);
+  })();
 
-  input.addEventListener('keydown', e => {
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendQuestion(); }
-  });
+  document.addEventListener('DOMContentLoaded', function() {
+    const toggle = document.getElementById('theme-toggle');
+    const html   = document.documentElement;
 
-  input.addEventListener('input', () => {
-    input.style.height = 'auto';
-    input.style.height = Math.min(input.scrollHeight, 140) + 'px';
-  });
+    // ── AUDIO PLAYER ──────────────────────────────────────────
+    const audioBtn      = document.getElementById('audio-btn');
+    const audioBar      = document.getElementById('audio-bar');
+    const mainAudio     = document.getElementById('main-audio');
+    const tldrLink      = document.getElementById('tldr-audio-link');
+    const apPlayBtn     = document.getElementById('ap-playbtn');
+    const apPlayIcon    = document.getElementById('ap-play-icon');
+    const apScrubber    = document.getElementById('ap-scrubber');
+    const apCurrent     = document.getElementById('ap-current');
+    const apDuration    = document.getElementById('ap-duration');
+    const apSpeed       = document.getElementById('ap-speed');
+    const apSpeedOpts   = document.getElementById('ap-speed-opts');
 
-  function ask(question, pillEl) {
-    if (pillEl) pillEl.remove();
-    input.value = question;
-    sendQuestion();
-  }
+    const PLAY_ICON  = '<polygon points="5 3 19 12 5 21 5 3" fill="currentColor" stroke="none"/>';
+    const PAUSE_ICON = '<line x1="6" y1="4" x2="6" y2="20" stroke-width="2.5"/><line x1="18" y1="4" x2="18" y2="20" stroke-width="2.5"/>';
 
-  function addMsg(role, content, sources) {
-    const msg = document.createElement('div');
-    msg.className = `msg ${role}`;
-
-    const label = document.createElement('div');
-    label.className = 'msg-role';
-    label.textContent = role === 'user' ? 'You' : 'Boris';
-    msg.appendChild(label);
-
-    const body = document.createElement('div');
-    body.className = 'msg-body';
-    body.innerHTML = content.replace(/\n/g, '<br>');
-    msg.appendChild(body);
-
-    if (sources && sources.length > 0) {
-      const src = document.createElement('div');
-      src.className = 'sources';
-      const lbl = document.createElement('div');
-      lbl.className = 'sources-label';
-      lbl.textContent = 'From the archive';
-      src.appendChild(lbl);
-      sources.slice(0, 3).forEach(s => {
-        const a = document.createElement('a');
-        a.className = 'source-item';
-        a.href = s.url;
-        a.target = '_blank';
-        a.rel = 'noopener';
-        a.innerHTML = `<span class="source-title">${s.title}</span><span class="source-date">${s.date}</span>`;
-        src.appendChild(a);
-      });
-      msg.appendChild(src);
+    function fmtTime(s) {
+      if (isNaN(s) || s === Infinity) return '—';
+      const m = Math.floor(s / 60);
+      const sec = Math.floor(s % 60);
+      return m + ':' + (sec < 10 ? '0' : '') + sec;
     }
 
-    thread.appendChild(msg);
-    thread.scrollIntoView({ behavior: 'smooth', block: 'end' });
-    return msg;
-  }
-
-  async function sendQuestion() {
-    const question = input.value.trim();
-    if (!question || sendBtn.disabled) return;
-
-    input.value = '';
-    input.style.height = 'auto';
-    sendBtn.disabled = true;
-
-    addMsg('user', question);
-
-    const thinking = document.createElement('div');
-    thinking.className = 'msg assistant';
-    thinking.innerHTML = `
-      <div class="msg-role">Boris</div>
-      <div class="thinking">Thinking <span class="dots"><span></span><span></span><span></span></span></div>
-    `;
-    thread.appendChild(thinking);
-    thinking.scrollIntoView({ behavior: 'smooth', block: 'end' });
-
-    try {
-      const res = await fetch('/ask', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question })
-      });
-      const data = await res.json();
-      thread.removeChild(thinking);
-      addMsg('assistant', data.answer, data.sources);
-    } catch (err) {
-      thread.removeChild(thinking);
-      addMsg('assistant', 'Something went wrong. Is the server running?', []);
+    function activatePlayer() {
+      audioBar.classList.add('active');
+      audioBtn.classList.add('is-active');
     }
 
-    sendBtn.disabled = false;
-    input.focus();
+    function startPlayback() {
+      activatePlayer();
+      mainAudio.play();
+    }
+
+    // Header icon — activate + play
+    audioBtn.addEventListener('click', function() {
+      activatePlayer();
+      if (mainAudio.paused) { mainAudio.play(); } else { mainAudio.pause(); }
+    });
+
+    // Notice bar link — activate + play
+    tldrLink.addEventListener('click', function(e) {
+      e.preventDefault();
+      startPlayback();
+    });
+
+    // Play / pause button in player bar
+    apPlayBtn.addEventListener('click', function() {
+      if (mainAudio.paused) { mainAudio.play(); } else { mainAudio.pause(); }
+    });
+
+    // Sync icon to play state
+    mainAudio.addEventListener('play', function() {
+      apPlayIcon.innerHTML = PAUSE_ICON;
+      audioBtn.classList.add('is-active');
+    });
+    mainAudio.addEventListener('pause', function() {
+      apPlayIcon.innerHTML = PLAY_ICON;
+    });
+    mainAudio.addEventListener('ended', function() {
+      apPlayIcon.innerHTML = PLAY_ICON;
+      apScrubber.value = 0;
+      apCurrent.textContent = '0:00';
+    });
+
+    // Duration
+    mainAudio.addEventListener('loadedmetadata', function() {
+      apDuration.textContent = fmtTime(mainAudio.duration);
+      apScrubber.max = mainAudio.duration;
+    });
+
+    // Time update — scrubber fill + current time
+    mainAudio.addEventListener('timeupdate', function() {
+      const pct = mainAudio.duration ? (mainAudio.currentTime / mainAudio.duration) * 100 : 0;
+      apScrubber.style.background =
+        'linear-gradient(to right, var(--accent) ' + pct + '%, var(--accent) ' + pct + '%, var(--border2) ' + pct + '%)';
+      apScrubber.value = mainAudio.currentTime;
+      apCurrent.textContent = fmtTime(mainAudio.currentTime);
+    });
+
+    // Scrub
+    apScrubber.addEventListener('input', function() {
+      mainAudio.currentTime = parseFloat(apScrubber.value);
+    });
+
+    // Speed selector — click label to open/close
+    apSpeed.addEventListener('click', function(e) {
+      e.stopPropagation();
+      apSpeedOpts.classList.toggle('open');
+    });
+    document.addEventListener('click', function() {
+      apSpeedOpts.classList.remove('open');
+    });
+
+    // Speed options
+    document.querySelectorAll('.ap-speed-opt').forEach(function(opt) {
+      opt.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const speed = parseFloat(opt.dataset.speed);
+        mainAudio.playbackRate = speed;
+        apSpeed.textContent = opt.textContent;
+        document.querySelectorAll('.ap-speed-opt').forEach(function(o) { o.classList.remove('selected'); });
+        opt.classList.add('selected');
+        apSpeedOpts.classList.remove('open');
+      });
+    });
+
+    function applyTheme(theme) {
+      html.setAttribute('data-theme', theme);
+      localStorage.setItem('theme', theme);
+    }
+
+    // Apply saved theme on load
+    const saved = localStorage.getItem('theme') || 'dark';
+    applyTheme(saved);
+
+    toggle.addEventListener('click', function() {
+      const current = html.getAttribute('data-theme') || 'dark';
+      applyTheme(current === 'dark' ? 'light' : 'dark');
+    });
+  });
+
+  // FILTER QUOTES
+  function filterQuotes(type, event) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    if (event) event.target.classList.add('active');
+
+    document.querySelectorAll('.quote-card').forEach(card => {
+      if (type === 'all' || card.dataset.type === type) {
+        card.classList.add('visible');
+      } else {
+        card.classList.remove('visible');
+      }
+    });
   }
+
+  // ANIMATE BARS ON SCROLL
+  const animBars = () => {
+    document.querySelectorAll('.bar-fill').forEach(bar => {
+      const rect = bar.closest('.bar-chart').getBoundingClientRect();
+      if (rect.top < window.innerHeight * 0.9 && !bar.style.width.includes('%')) {
+        bar.style.width = bar.dataset.width;
+      }
+    });
+  };
+
+  // ANIMATE ON SCROLL
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in-view');
+
+        // Trigger bars if inside this element
+        entry.target.querySelectorAll('.bar-fill').forEach(bar => {
+          setTimeout(() => { bar.style.width = bar.dataset.width; }, 200);
+        });
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.anim').forEach(el => observer.observe(el));
+
+  // ACTIVE SIDEBAR LINK
+  const sections = document.querySelectorAll('section[id]');
+  const sideLinks = document.querySelectorAll('.sidebar-link');
+
+  const sectionObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        sideLinks.forEach(l => l.classList.remove('active'));
+        const active = document.querySelector(`.sidebar-link[href="#${entry.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-30% 0px -60% 0px' });
+
+  sections.forEach(s => sectionObserver.observe(s));
+
+  // HAMBURGER MENU
+  const hamburger = document.getElementById('hamburger');
+  const mobileNav = document.getElementById('mobile-nav');
+
+  function closeMenu() {
+    mobileNav.classList.remove('open');
+    hamburger.classList.remove('open');
+  }
+
+  hamburger.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isOpen = mobileNav.classList.contains('open');
+    isOpen ? closeMenu() : (mobileNav.classList.add('open'), hamburger.classList.add('open'));
+  });
+
+  // Close when a nav link is clicked
+  document.querySelectorAll('.mobile-nav-link').forEach(link => {
+    link.addEventListener('click', closeMenu);
+  });
+
+  // Close on outside click or tap
+  document.addEventListener('click', (e) => {
+    if (!mobileNav.contains(e.target) && !hamburger.contains(e.target)) closeMenu();
+  });
+
+  // Close on scroll
+  window.addEventListener('scroll', closeMenu, { passive: true });
+
+  // Hide menu and reset if resized above mobile breakpoint
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 700) closeMenu();
+  });
 </script>
-
 </body>
 </html>

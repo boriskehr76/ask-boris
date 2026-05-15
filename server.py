@@ -1,8 +1,9 @@
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify, send_from_directory, Response, stream_with_context
 import chromadb
 from sentence_transformers import SentenceTransformer
 import anthropic
 import os
+import json
 
 app = Flask(__name__)
 
@@ -13,22 +14,38 @@ model = SentenceTransformer("all-MiniLM-L6-v2")
 claude = anthropic.Anthropic()
 print("Ready.")
 
-@app.route("/")
-def index():
-    return send_from_directory(".", "index.html")
+SYSTEM_PROMPT = """You are Boris Kehr — a designer and ML student based in Stockholm with 15+ years of experience in UX, product design, and AI/ML. You write and think in a direct, opinionated way. You believe design is about solving real problems, not aesthetics. You are skeptical of hype, including AI hype.
 
-@app.route("/ask", methods=["POST"])
-def ask():
-    data = request.json
-    question = data.get("question", "").strip()
-    if not question:
-        return jsonify({"error": "No question provided"}), 400
+Use the retrieval confidence signal to frame your answer:
 
+- If confidence is HIGH: answer directly and confidently from the context, in Boris's voice. No disclaimers needed.
+- If confidence is MEDIUM: start your answer with "Based on related topics I've written about..." and build from the context plus reasonable extrapolation.
+- If confidence is LOW: you will NOT receive this — the frontend handles it separately.
+
+Never break character. Never say you are an AI or a language model. Always answer as Boris.
+Answer in the same language the question was asked in.
+Keep answers focused and direct — Boris doesn't ramble."""
+
+
+def get_context_and_sources(question):
     vector = model.encode([question]).tolist()
-    results = collection.query(query_embeddings=vector, n_results=5)
+    results = collection.query(
+        query_embeddings=vector,
+        n_results=10,
+        include=["documents", "metadatas", "distances"]
+    )
 
     docs = results["documents"][0]
     metas = results["metadatas"][0]
+    distances = results["distances"][0]
+
+    avg_distance = sum(distances) / len(distances)
+    if avg_distance < 0.5:
+        confidence = "high"
+    elif avg_distance < 0.8:
+        confidence = "medium"
+    else:
+        confidence = "low"
 
     context = ""
     sources = []
@@ -46,27 +63,60 @@ def ask():
                 "url": meta["url"]
             })
 
-    system = """You are Boris Kehr — a designer and ML student based in Stockholm with 15+ years of experience in UX, product design, and AI/ML.
-Answer questions based only on the context provided. Be direct and opinionated, in Boris's voice.
-If the context doesn't contain enough information, say so honestly.
-Answer in the same language the question was asked in."""
+    return context, sources, confidence
 
-    user_prompt = f"""Context from Boris's writing:
+
+@app.route("/")
+def index():
+    return send_from_directory(".", "index.html")
+
+
+@app.route("/ask", methods=["POST"])
+def ask():
+    data = request.json
+    question = data.get("question", "").strip()
+    confirmed = data.get("confirmed", False)
+
+    if not question:
+        return jsonify({"error": "No question provided"}), 400
+
+    context, sources, confidence = get_context_and_sources(question)
+
+    # Low confidence and not yet confirmed — ask the user first
+    if confidence == "low" and not confirmed:
+        return jsonify({"confirm_needed": True})
+
+    # Stream the response
+    user_prompt = f"""Retrieval confidence: {"low" if confirmed else confidence}
+Context from Boris's writing:
 {context}
 
 Question: {question}"""
 
-    response = claude.messages.create(
-        model=os.environ.get("ANTHROPIC_MODEL", "claude-sonnet-4-5"),
-        max_tokens=1000,
-        system=system,
-        messages=[{"role": "user", "content": user_prompt}]
+    def generate():
+        # First chunk: send sources so frontend can render them early
+        yield f"data: {json.dumps({'sources': sources[:3]})}\n\n"
+
+        with claude.messages.stream(
+            model=os.environ.get("ANTHROPIC_MODEL", "claude-sonnet-4-5"),
+            max_tokens=1000,
+            system=SYSTEM_PROMPT,
+            messages=[{"role": "user", "content": user_prompt}]
+        ) as stream:
+            for text in stream.text_stream:
+                yield f"data: {json.dumps({'token': text})}\n\n"
+
+        yield "data: [DONE]\n\n"
+
+    return Response(
+        stream_with_context(generate()),
+        mimetype="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no"
+        }
     )
 
-    return jsonify({
-        "answer": response.content[0].text,
-        "sources": sources
-    })
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
