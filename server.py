@@ -49,19 +49,36 @@ def get_context_and_sources(question):
 
     context = ""
     sources = []
+    seen_source_types = set()
+
     for doc, meta in zip(docs, metas):
         context += f"\n---\n{doc}\n"
+        source_type = meta.get("source", "")
+
         if meta.get("url"):
             title = meta.get("title", "").strip()
             if not title:
-                first_sentence = doc.split(".")[0].strip()[:80]
-                title = first_sentence
+                title = doc.split(".")[0].strip()[:80]
             date = meta.get("date", "")[:10]
             sources.append({
                 "title": title,
                 "date": date,
                 "url": meta["url"]
             })
+        elif source_type == "interview" and "interview" not in seen_source_types:
+            sources.append({
+                "title": "Based on my conversations",
+                "date": "",
+                "url": None
+            })
+            seen_source_types.add("interview")
+        elif source_type == "notes" and "notes" not in seen_source_types:
+            sources.append({
+                "title": "Based on my unpublished notes",
+                "date": "",
+                "url": None
+            })
+            seen_source_types.add("notes")
 
     return context, sources, confidence
 
@@ -69,6 +86,11 @@ def get_context_and_sources(question):
 @app.route("/")
 def index():
     return send_from_directory(".", "index.html")
+
+
+@app.route("/chat")
+def chat():
+    return send_from_directory(".", "chat.html")
 
 
 @app.route("/ask", methods=["POST"])

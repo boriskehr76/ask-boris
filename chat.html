@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ask Boris</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0f0f0f;
+      color: #e8e8e8;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 15px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      padding: 2rem 1.5rem 1.25rem;
+      border-bottom: 1px solid #222;
+    }
+
+    header h1 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+    }
+
+    header p {
+      margin-top: 0.3rem;
+      font-size: 0.8rem;
+      color: #666;
+    }
+
+    #chat {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      max-width: 720px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .msg {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .msg-role {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #555;
+    }
+
+    .msg.user .msg-role { color: #888; }
+    .msg.assistant .msg-role { color: #4a9eff; }
+
+    .msg-body {
+      line-height: 1.65;
+      color: #e0e0e0;
+      white-space: pre-wrap;
+    }
+
+    .msg.user .msg-body {
+      color: #aaa;
+    }
+
+    .sources {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.6rem;
+    }
+
+    .source-chip {
+      display: inline-block;
+      font-size: 0.72rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 4px;
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      color: #888;
+      text-decoration: none;
+      transition: color 0.15s, border-color 0.15s;
+    }
+
+    a.source-chip:hover {
+      color: #4a9eff;
+      border-color: #4a9eff;
+    }
+
+    .source-chip.label {
+      font-style: italic;
+      cursor: default;
+    }
+
+    .source-chip .source-date {
+      color: #555;
+      margin-left: 0.3rem;
+    }
+
+    .confirm-box {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 1rem 1.2rem;
+      margin-top: 0.5rem;
+    }
+
+    .confirm-box p {
+      font-size: 0.85rem;
+      color: #888;
+      margin-bottom: 0.75rem;
+      line-height: 1.5;
+    }
+
+    .confirm-box button {
+      font-size: 0.8rem;
+      padding: 0.4rem 1rem;
+      border-radius: 4px;
+      border: 1px solid #333;
+      background: transparent;
+      color: #aaa;
+      cursor: pointer;
+      margin-right: 0.5rem;
+      transition: color 0.15s, border-color 0.15s;
+    }
+
+    .confirm-box button.primary {
+      border-color: #4a9eff;
+      color: #4a9eff;
+    }
+
+    .confirm-box button:hover { color: #fff; border-color: #fff; }
+
+    .cursor {
+      display: inline-block;
+      width: 2px;
+      height: 1em;
+      background: #4a9eff;
+      margin-left: 1px;
+      vertical-align: text-bottom;
+      animation: blink 0.9s step-end infinite;
+    }
+
+    @keyframes blink { 50% { opacity: 0; } }
+
+    #input-area {
+      border-top: 1px solid #222;
+      padding: 1rem 1.5rem;
+      max-width: 720px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    #input-row {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    #question {
+      flex: 1;
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 6px;
+      padding: 0.65rem 0.9rem;
+      color: #e0e0e0;
+      font-size: 0.9rem;
+      font-family: inherit;
+      outline: none;
+      resize: none;
+      line-height: 1.5;
+      transition: border-color 0.15s;
+    }
+
+    #question:focus { border-color: #444; }
+    #question::placeholder { color: #444; }
+
+    #send {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 6px;
+      color: #666;
+      font-size: 1.1rem;
+      padding: 0 1rem;
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s;
+      flex-shrink: 0;
+    }
+
+    #send:hover:not(:disabled) { color: #4a9eff; border-color: #4a9eff; }
+    #send:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    #hint {
+      font-size: 0.7rem;
+      color: #333;
+      margin-top: 0.5rem;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Ask Boris</h1>
+  <p>Ask me anything about design, product, AI, and hiring.</p>
+</header>
+
+<div id="chat"></div>
+
+<div id="input-area">
+  <div id="input-row">
+    <textarea id="question" rows="1" placeholder="What do you think about…"></textarea>
+    <button id="send">&#8593;</button>
+  </div>
+  <div id="hint">Enter to send · Shift+Enter for new line</div>
+</div>
+
+<script>
+  const chat     = document.getElementById('chat');
+  const input    = document.getElementById('question');
+  const sendBtn  = document.getElementById('send');
+  let   busy     = false;
+
+  // Auto-resize textarea
+  input.addEventListener('input', () => {
+    input.style.height = 'auto';
+    input.style.height = Math.min(input.scrollHeight, 160) + 'px';
+  });
+
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      submit();
+    }
+  });
+
+  sendBtn.addEventListener('click', submit);
+
+  function appendMsg(role, text) {
+    const msg = document.createElement('div');
+    msg.className = 'msg ' + role;
+    msg.innerHTML = `
+      <div class="msg-role">${role === 'user' ? 'You' : 'Boris'}</div>
+      <div class="msg-body">${escHtml(text)}</div>
+    `;
+    chat.appendChild(msg);
+    msg.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    return msg.querySelector('.msg-body');
+  }
+
+  function renderSources(sources) {
+    if (!sources || sources.length === 0) return;
+    const lastMsg = chat.lastElementChild;
+    if (!lastMsg) return;
+
+    const div = document.createElement('div');
+    div.className = 'sources';
+
+    sources.forEach(s => {
+      const chip = document.createElement(s.url ? 'a' : 'span');
+      chip.className = 'source-chip' + (s.url ? '' : ' label');
+      if (s.url) {
+        chip.href = s.url;
+        chip.target = '_blank';
+        chip.rel = 'noopener';
+      }
+      let label = escHtml(s.title);
+      if (s.date) label += `<span class="source-date">${escHtml(s.date)}</span>`;
+      chip.innerHTML = label;
+      div.appendChild(chip);
+    });
+
+    lastMsg.appendChild(div);
+  }
+
+  function showConfirm(question) {
+    const lastMsg = chat.lastElementChild;
+    const box = document.createElement('div');
+    box.className = 'confirm-box';
+    box.innerHTML = `
+      <p>I don't have much specific writing on this. I can give you my best take based on related topics — want me to try?</p>
+      <button class="primary" id="confirm-yes">Yes, go ahead</button>
+      <button id="confirm-no">Never mind</button>
+    `;
+    lastMsg.appendChild(box);
+    lastMsg.scrollIntoView({ behavior: 'smooth', block: 'end' });
+
+    document.getElementById('confirm-yes').addEventListener('click', () => {
+      box.remove();
+      stream(question, true);
+    });
+    document.getElementById('confirm-no').addEventListener('click', () => {
+      box.remove();
+      setIdle();
+    });
+  }
+
+  function escHtml(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function setBusy() {
+    busy = true;
+    sendBtn.disabled = true;
+    input.disabled = true;
+  }
+
+  function setIdle() {
+    busy = false;
+    sendBtn.disabled = false;
+    input.disabled = false;
+    input.focus();
+  }
+
+  function submit() {
+    if (busy) return;
+    const q = input.value.trim();
+    if (!q) return;
+    input.value = '';
+    input.style.height = 'auto';
+    appendMsg('user', q);
+    setBusy();
+    stream(q, false);
+  }
+
+  function stream(question, confirmed) {
+    const bodyEl = appendMsg('assistant', '');
+    const cursor = document.createElement('span');
+    cursor.className = 'cursor';
+    bodyEl.appendChild(cursor);
+
+    let text = '';
+    let sourcesRendered = false;
+
+    fetch('/ask', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question, confirmed })
+    }).then(res => {
+      // Handle non-streaming JSON responses (confirm_needed, errors)
+      const ct = res.headers.get('content-type') || '';
+      if (!ct.includes('text/event-stream')) {
+        return res.json().then(data => {
+          cursor.remove();
+          if (data.confirm_needed) {
+            bodyEl.textContent = '';
+            showConfirm(question);
+          } else {
+            bodyEl.textContent = 'Something went wrong.';
+            setIdle();
+          }
+        });
+      }
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buf = '';
+
+      function read() {
+        reader.read().then(({ done, value }) => {
+          if (done) {
+            cursor.remove();
+            if (!sourcesRendered) renderSources([]);
+            setIdle();
+            return;
+          }
+
+          buf += decoder.decode(value, { stream: true });
+          const lines = buf.split('\n');
+          buf = lines.pop();
+
+          lines.forEach(line => {
+            if (!line.startsWith('data: ')) return;
+            const raw = line.slice(6).trim();
+            if (raw === '[DONE]') {
+              cursor.remove();
+              setIdle();
+              return;
+            }
+            try {
+              const ev = JSON.parse(raw);
+              if (ev.sources !== undefined && !sourcesRendered) {
+                sourcesRendered = true;
+                renderSources(ev.sources);
+              }
+              if (ev.token !== undefined) {
+                text += ev.token;
+                bodyEl.childNodes[0]
+                  ? bodyEl.insertBefore(document.createTextNode(ev.token), cursor)
+                  : bodyEl.prepend(document.createTextNode(ev.token));
+                chat.scrollTop = chat.scrollHeight;
+              }
+            } catch {}
+          });
+
+          read();
+        });
+      }
+
+      read();
+    }).catch(() => {
+      cursor.remove();
+      bodyEl.textContent = 'Connection error.';
+      setIdle();
+    });
+  }
+</script>
+</body>
+</html>
