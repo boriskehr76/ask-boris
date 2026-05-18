@@ -4,4 +4,4 @@ sentence-transformers
 anthropic
 openai
 google-generativeai
-mistralai
+mistralai>=1.0.0
