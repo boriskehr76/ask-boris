@@ -18,23 +18,11 @@ MODELS = {
         "input_cost": 1.00,
         "output_cost": 5.00,
     },
-    "claude-sonnet-4-6": {
-        "name": "Claude Sonnet 4.6",
-        "provider": "anthropic",
-        "input_cost": 3.00,
-        "output_cost": 15.00,
-    },
     "gpt-4o-mini": {
         "name": "GPT-4o mini",
         "provider": "openai",
         "input_cost": 0.15,
         "output_cost": 0.60,
-    },
-    "gpt-4o": {
-        "name": "GPT-4o",
-        "provider": "openai",
-        "input_cost": 2.50,
-        "output_cost": 10.00,
     },
     "gemini-1.5-flash": {
         "name": "Gemini 1.5 Flash",
