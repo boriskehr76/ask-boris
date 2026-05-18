@@ -186,20 +186,23 @@ def get_context_and_sources(question):
             sources.append({
                 "title": title,
                 "date": date,
-                "url": meta["url"]
+                "url": meta["url"],
+                "type": "post"
             })
         elif source_type == "interview" and "interview" not in seen_source_types:
             sources.append({
-                "title": "Based on my conversations",
+                "title": "",
                 "date": "",
-                "url": None
+                "url": None,
+                "type": "conversation"
             })
             seen_source_types.add("interview")
         elif source_type == "notes" and "notes" not in seen_source_types:
             sources.append({
-                "title": "Based on my unpublished notes",
+                "title": "",
                 "date": "",
-                "url": None
+                "url": None,
+                "type": "note"
             })
             seen_source_types.add("notes")
 

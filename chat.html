@@ -125,23 +125,26 @@
 
     /* ── Welcome message ────────────────────────────────────────── */
     #welcome {
-      padding: 2rem 0 1rem;
+      padding: 2.5rem 0 1.5rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 1rem;
     }
 
     #welcome h2 {
       font-family: var(--serif);
-      font-size: 1.4rem;
-      font-weight: 400;
+      font-size: 2.4rem;
+      font-weight: 700;
       color: var(--text);
-      margin-bottom: 1rem;
-      line-height: 1.4;
+      margin-bottom: 1.25rem;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
     }
 
     #welcome p {
       font-family: var(--serif);
-      font-size: 0.95rem;
+      font-size: 1rem;
       color: var(--text2);
-      line-height: 1.8;
+      line-height: 1.85;
       margin-bottom: 0.75rem;
     }
 
@@ -162,12 +165,6 @@
       border: 1px solid var(--border);
       border-radius: 3px;
       padding: 0.2rem 0.5rem;
-    }
-
-    #welcome hr {
-      border: none;
-      border-top: 1px solid var(--border);
-      margin: 1.5rem 0 0;
     }
 
     /* ── Conversation starters ──────────────────────────────────── */
@@ -232,39 +229,57 @@
       font-size: 0.95rem;
     }
 
-    /* ── Sources ────────────────────────────────────────────────── */
-    .sources {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.4rem;
-      margin-top: 0.75rem;
+    /* ── References ─────────────────────────────────────────────── */
+    .references {
+      margin-top: 1.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
     }
 
-    .source-chip {
-      display: inline-block;
+    .references-label {
       font-family: var(--mono);
-      font-size: 0.68rem;
-      letter-spacing: 0.04em;
-      padding: 0.2rem 0.55rem;
-      border-radius: 3px;
-      background: var(--bg2);
-      border: 1px solid var(--border);
+      font-size: 0.62rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
       color: var(--text3);
+      margin-bottom: 0.6rem;
+    }
+
+    .reference-item {
+      display: flex;
+      align-items: baseline;
+      gap: 0.5rem;
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      line-height: 1.7;
+      color: var(--text2);
+    }
+
+    .ref-type {
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text3);
+      flex-shrink: 0;
+      min-width: 5.5rem;
+    }
+
+    .ref-link {
+      color: #4a7fa8;
       text-decoration: none;
-      transition: color 0.15s, border-color 0.15s;
+      transition: color 0.15s;
     }
 
-    a.source-chip:hover {
-      color: var(--accent);
-      border-color: var(--accent);
-    }
+    .ref-link:hover { color: #6aabda; text-decoration: underline; }
 
-    .source-chip.label { cursor: default; font-style: italic; }
-
-    .source-chip .source-date {
+    .ref-date {
       color: var(--text3);
-      opacity: 0.6;
-      margin-left: 0.3rem;
+      font-size: 0.68rem;
+    }
+
+    .ref-plain {
+      color: var(--text3);
+      font-style: italic;
     }
 
     /* ── Confirm box ────────────────────────────────────────────── */
@@ -408,7 +423,6 @@
       <span class="source-tag">275 conversation excerpts</span>
       <span class="source-tag">Unpublished notes</span>
     </div>
-    <hr>
     <div id="starters">
       <button class="starter">What do you think about the role of AI in design?</button>
       <button class="starter">How has the UX designer role changed in the last few years?</button>
@@ -486,7 +500,6 @@
   sendBtn.addEventListener('click', submit);
 
   function appendMsg(role, text) {
-    if (welcome) welcome.style.display = 'none';
     const msg = document.createElement('div');
     msg.className = 'msg ' + role;
     msg.innerHTML = `
@@ -503,20 +516,64 @@
     const lastMsg = chat.lastElementChild;
     if (!lastMsg || !lastMsg.classList.contains('assistant')) return;
 
-    const div = document.createElement('div');
-    div.className = 'sources';
+    const section = document.createElement('div');
+    section.className = 'references';
+
+    const heading = document.createElement('div');
+    heading.className = 'references-label';
+    heading.textContent = 'References';
+    section.appendChild(heading);
 
     sources.forEach(s => {
-      const chip = document.createElement(s.url ? 'a' : 'span');
-      chip.className = 'source-chip' + (s.url ? '' : ' label');
-      if (s.url) { chip.href = s.url; chip.target = '_blank'; chip.rel = 'noopener'; }
-      let label = escHtml(s.title);
-      if (s.date) label += `<span class="source-date">${escHtml(s.date)}</span>`;
-      chip.innerHTML = label;
-      div.appendChild(chip);
+      const item = document.createElement('div');
+      item.className = 'reference-item';
+
+      const typeEl = document.createElement('span');
+      typeEl.className = 'ref-type';
+
+      if (s.type === 'post' && s.url) {
+        typeEl.textContent = 'Post';
+        item.appendChild(typeEl);
+
+        const link = document.createElement('a');
+        link.className = 'ref-link';
+        link.href = s.url;
+        link.target = '_blank';
+        link.rel = 'noopener';
+
+        let title = s.title || '';
+        if (title.length > 80) title = title.slice(0, 77) + '…';
+        link.textContent = title;
+
+        if (s.date) {
+          const dateEl = document.createElement('span');
+          dateEl.className = 'ref-date';
+          dateEl.textContent = ' · ' + s.date;
+          link.appendChild(dateEl);
+        }
+        item.appendChild(link);
+
+      } else if (s.type === 'conversation') {
+        typeEl.textContent = 'Conversation';
+        item.appendChild(typeEl);
+        const text = document.createElement('span');
+        text.className = 'ref-plain';
+        text.textContent = 'based on conversations with designers and recruiters';
+        item.appendChild(text);
+
+      } else if (s.type === 'note') {
+        typeEl.textContent = 'Note';
+        item.appendChild(typeEl);
+        const text = document.createElement('span');
+        text.className = 'ref-plain';
+        text.textContent = 'from unpublished notes';
+        item.appendChild(text);
+      }
+
+      section.appendChild(item);
     });
 
-    lastMsg.querySelector('.msg-body').appendChild(div);
+    lastMsg.querySelector('.msg-body').appendChild(section);
   }
 
   function showConfirm(question) {
