@@ -269,9 +269,7 @@
 
     /* ── References ─────────────────────────────────────────────── */
     .references {
-      margin-top: 1.25rem;
-      padding-top: 1rem;
-      border-top: 1px solid var(--border);
+      margin-top: 1.5rem;
     }
 
     .references-label {
@@ -280,7 +278,9 @@
       letter-spacing: 0.08em;
       text-transform: uppercase;
       color: var(--ink-faint);
-      margin-bottom: 0.5rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 0;
     }
 
     .source-item {
@@ -426,6 +426,21 @@
       color: var(--ink-faint);
       text-align: center;
     }
+
+    /* ── Clear button ───────────────────────────────────────────── */
+    #clear-btn {
+      font-family: var(--sans);
+      font-size: 0.7rem;
+      color: var(--ink-faint);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.2rem 0.4rem;
+      flex-shrink: 0;
+      transition: color 0.15s;
+    }
+
+    #clear-btn:hover { color: var(--accent); }
   </style>
 </head>
 <body>
@@ -433,6 +448,7 @@
 <header>
   <span class="logo">Ask Boris</span>
   <div id="model-selector">
+    <button id="clear-btn">Clear</button>
     <select id="model-select"><option>Loading…</option></select>
     <div id="model-cost"></div>
   </div>
@@ -481,6 +497,7 @@
   const modelCost = document.getElementById('model-cost');
   let   busy      = false;
   let   modelsData = {};
+  const shownRefs = new Set();  // tracks URLs + types already rendered across all messages
 
   fetch('/models').then(r => r.json()).then(data => {
     modelsData = data;
@@ -510,8 +527,15 @@
       if (busy) return;
       input.value = btn.textContent;
       autosize();
+      btn.remove();
       submit();
     });
+  });
+
+  document.getElementById('clear-btn').addEventListener('click', () => {
+    thread.innerHTML = '';
+    shownRefs.clear();
+    if (busy) setIdle();
   });
 
   function autosize() {
@@ -562,6 +586,24 @@
     const lastMsg = thread.lastElementChild;
     if (!lastMsg || !lastMsg.classList.contains('assistant')) return;
 
+    // Deduplicate against already-shown references this session
+    const fresh = sources.filter(s => {
+      const key = s.url || s.type;
+      if (shownRefs.has(key)) return false;
+      shownRefs.add(key);
+      return true;
+    });
+
+    if (fresh.length === 0) return;
+
+    // Sort: dated posts newest-first, then undated sources (conversation, note)
+    fresh.sort((a, b) => {
+      if (!a.date && !b.date) return 0;
+      if (!a.date) return 1;
+      if (!b.date) return -1;
+      return b.date.localeCompare(a.date);
+    });
+
     const section = document.createElement('div');
     section.className = 'references';
 
@@ -570,7 +612,7 @@
     heading.textContent = 'References';
     section.appendChild(heading);
 
-    sources.forEach(s => {
+    fresh.forEach(s => {
       const isLink = s.type === 'post' && s.url;
       const item = document.createElement(isLink ? 'a' : 'div');
       item.className = 'source-item' + (isLink ? '' : ' source-item--plain');
@@ -585,7 +627,7 @@
       if (s.type === 'post') {
         typeEl.textContent = 'Post';
         let title = s.title || '';
-        if (title.length > 80) title = title.slice(0, 77) + '…';
+        if (title.length > 60) title = title.slice(0, 57) + '…';
         titleEl.textContent = title;
         item.appendChild(typeEl);
         item.appendChild(titleEl);
