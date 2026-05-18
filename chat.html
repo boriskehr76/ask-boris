@@ -254,6 +254,34 @@
       white-space: pre-wrap;
     }
 
+    /* ── Thinking indicator ─────────────────────────────────────── */
+    .thinking-status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--ink-muted);
+      font-size: 0.88rem;
+      font-style: italic;
+      font-family: var(--serif);
+    }
+
+    .thinking-dots span {
+      display: inline-block;
+      width: 3px;
+      height: 3px;
+      background: var(--ink-faint);
+      border-radius: 50%;
+      animation: dotPulse 1.2s ease-in-out infinite;
+      margin: 0 1px;
+    }
+    .thinking-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .thinking-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes dotPulse {
+      0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
+      40%           { opacity: 1;   transform: scale(1); }
+    }
+
     /* ── Streaming cursor ───────────────────────────────────────── */
     .cursor {
       display: inline-block;
@@ -690,11 +718,45 @@
 
   function stream(question, confirmed) {
     const { body: bodyEl } = appendMsg('assistant', '');
-    const cursor = document.createElement('span');
-    cursor.className = 'cursor';
-    bodyEl.appendChild(cursor);
 
-    let sourcesRendered = false;
+    // Thinking indicator — cycles through status messages until first token arrives
+    const statusPhrases = [
+      'Thinking',
+      'Searching through articles',
+      'Reading through notes',
+      'Putting together an answer'
+    ];
+    let phraseIdx = 0;
+    const statusEl = document.createElement('div');
+    statusEl.className = 'thinking-status';
+    statusEl.innerHTML = `${statusPhrases[0]}<span class="thinking-dots"><span></span><span></span><span></span></span>`;
+    bodyEl.appendChild(statusEl);
+
+    const statusTimer = setInterval(() => {
+      phraseIdx = (phraseIdx + 1) % statusPhrases.length;
+      statusEl.firstChild.textContent = statusPhrases[phraseIdx];
+    }, 2500);
+
+    let cursor = null;
+    let bufferedSources = null;
+    let firstToken = true;
+
+    function startStreaming() {
+      clearInterval(statusTimer);
+      if (statusEl.parentNode) statusEl.remove();
+      if (!cursor) {
+        cursor = document.createElement('span');
+        cursor.className = 'cursor';
+        bodyEl.appendChild(cursor);
+      }
+    }
+
+    function finish() {
+      startStreaming();
+      if (cursor) cursor.remove();
+      if (bufferedSources) renderSources(bufferedSources);
+      setIdle();
+    }
 
     fetch('/ask', {
       method: 'POST',
@@ -704,9 +766,9 @@
       const ct = res.headers.get('content-type') || '';
       if (!ct.includes('text/event-stream')) {
         return res.json().then(data => {
-          cursor.remove();
+          clearInterval(statusTimer);
+          statusEl.remove();
           if (data.confirm_needed) {
-            bodyEl.textContent = '';
             showConfirm(question);
           } else {
             bodyEl.textContent = data.error || 'Something went wrong.';
@@ -721,7 +783,7 @@
 
       function read() {
         reader.read().then(({ done, value }) => {
-          if (done) { cursor.remove(); setIdle(); return; }
+          if (done) { finish(); return; }
 
           buf += decoder.decode(value, { stream: true });
           const lines = buf.split('\n');
@@ -730,14 +792,12 @@
           lines.forEach(line => {
             if (!line.startsWith('data: ')) return;
             const raw = line.slice(6).trim();
-            if (raw === '[DONE]') { cursor.remove(); setIdle(); return; }
+            if (raw === '[DONE]') { finish(); return; }
             try {
               const ev = JSON.parse(raw);
-              if (ev.sources !== undefined && !sourcesRendered) {
-                sourcesRendered = true;
-                renderSources(ev.sources);
-              }
+              if (ev.sources !== undefined) bufferedSources = ev.sources;
               if (ev.token) {
+                if (firstToken) { firstToken = false; startStreaming(); }
                 bodyEl.insertBefore(document.createTextNode(ev.token), cursor);
                 scrollBottom(false);
               }
@@ -750,7 +810,7 @@
 
       read();
     }).catch(() => {
-      cursor.remove();
+      clearInterval(statusTimer);
       bodyEl.textContent = 'Connection error.';
       setIdle();
     });

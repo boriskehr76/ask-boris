@@ -176,12 +176,17 @@ def get_context_and_sources(question):
     context = ""
     sources = []
     seen_source_types = set()
+    seen_urls = set()
 
     for doc, meta in zip(docs, metas):
         context += f"\n---\n{doc}\n"
         source_type = meta.get("source", "")
 
         if meta.get("url"):
+            url = meta["url"]
+            if url in seen_urls:
+                continue
+            seen_urls.add(url)
             title = meta.get("title", "").strip()
             if not title:
                 title = doc.split(".")[0].strip()[:80]
@@ -189,7 +194,7 @@ def get_context_and_sources(question):
             sources.append({
                 "title": title,
                 "date": date,
-                "url": meta["url"],
+                "url": url,
                 "type": "post"
             })
         elif source_type == "interview" and "interview" not in seen_source_types:
