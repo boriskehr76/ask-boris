@@ -5,328 +5,261 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ask Boris</title>
 
-  <!-- Chatbot favicon: speech bubble with dots -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230e0e0e'/%3E%3Cpath d='M5 7 Q5 5 7 5 L25 5 Q27 5 27 7 L27 19 Q27 21 25 21 L18 21 L15 27 L15 21 L7 21 Q5 21 5 19 Z' fill='%23d4a84b'/%3E%3Ccircle cx='11' cy='13' r='1.8' fill='%230e0e0e'/%3E%3Ccircle cx='16' cy='13' r='1.8' fill='%230e0e0e'/%3E%3Ccircle cx='21' cy='13' r='1.8' fill='%230e0e0e'/%3E%3C/svg%3E">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23c4472a'/%3E%3Cpath d='M7 9a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3h-5l-4 4v-4H10a3 3 0 0 1-3-3V9z' fill='white'/%3E%3C/svg%3E">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@300;400;500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 
   <style>
-    :root {
-      --bg:      #0e0e0e;
-      --bg2:     #141414;
-      --bg3:     #1a1a1a;
-      --border:  #2a2a2a;
-      --border2: #333;
-      --text:    #e8e4dc;
-      --text2:   #b8b2aa;
-      --text3:   #a09890;
-      --accent:  #d4a84b;
-      --accent2: #e8c870;
-      --serif:   'Libre Baskerville', Georgia, serif;
-      --mono:    'DM Mono', monospace;
-      --sans:    'Instrument Sans', sans-serif;
-    }
-
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:           #f5f2eb;
+      --bg-card:      #faf8f3;
+      --ink:          #1a1814;
+      --ink-muted:    #6b6760;
+      --ink-faint:    #b0ada6;
+      --accent:       #c4472a;
+      --bubble:       #8b2e18;
+      --accent-light: #f7ede9;
+      --border:       #ddd9d0;
+      --border-strong:#c8c4ba;
+      --serif:        'Playfair Display', Georgia, serif;
+      --sans:         'DM Sans', system-ui, sans-serif;
+    }
 
     html { scroll-behavior: smooth; }
 
     body {
-      background: var(--bg);
-      color: var(--text);
       font-family: var(--sans);
-      font-size: 15px;
+      font-size: 20px;
+      background: var(--bg);
+      color: var(--ink);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       -webkit-font-smoothing: antialiased;
     }
 
-    /* Noise texture */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
-      pointer-events: none;
-      z-index: 1000;
-      opacity: 0.4;
-    }
-
     /* ── Header ─────────────────────────────────────────────────── */
     header {
       border-bottom: 1px solid var(--border);
-      padding: 0 1.5rem;
-      height: 56px;
+      padding: 0 2rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 1rem;
+      height: 56px;
+      background: var(--bg);
       position: sticky;
       top: 0;
-      background: var(--bg);
-      backdrop-filter: blur(12px);
-      z-index: 100;
-      flex-shrink: 0;
+      z-index: 10;
     }
 
     .logo {
-      font-family: var(--mono);
-      font-size: 12px;
-      font-weight: 500;
-      letter-spacing: 0.15em;
-      color: var(--accent);
-      text-transform: uppercase;
+      font-family: var(--serif);
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--ink);
+      text-decoration: none;
+      letter-spacing: -0.01em;
+      flex-shrink: 0;
     }
 
     /* ── Model selector ─────────────────────────────────────────── */
     #model-selector {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
+      gap: 0.6rem;
       flex-shrink: 0;
     }
 
     #model-select {
-      background: var(--bg2);
-      border: 1px solid var(--border);
+      background: var(--bg-card);
+      border: 1px solid var(--border-strong);
       border-radius: 4px;
-      color: var(--text2);
-      font-size: 0.75rem;
-      font-family: var(--mono);
-      padding: 0.3rem 0.6rem;
+      color: var(--ink-muted);
+      font-size: 0.72rem;
+      font-family: var(--sans);
+      padding: 0.28rem 0.55rem;
       cursor: pointer;
       outline: none;
       transition: border-color 0.15s;
     }
 
-    #model-select:focus { border-color: var(--border2); }
+    #model-select:focus { border-color: var(--accent); }
 
     #model-cost {
-      font-size: 0.68rem;
-      font-family: var(--mono);
-      color: var(--text3);
+      font-size: 0.65rem;
+      color: var(--ink-faint);
       white-space: nowrap;
     }
 
-    /* ── Chat area ──────────────────────────────────────────────── */
-    #chat {
+    /* ── Main layout ────────────────────────────────────────────── */
+    main {
       flex: 1;
-      overflow-y: auto;
-      padding: 2rem 1.5rem;
-      display: flex;
-      flex-direction: column;
-      gap: 2rem;
-      max-width: 680px;
-      width: 100%;
+      max-width: 720px;
       margin: 0 auto;
+      width: 100%;
+      padding: 3rem 2rem 9rem;
     }
 
-    /* ── Welcome message ────────────────────────────────────────── */
-    #welcome {
-      padding: 2.5rem 0 1.5rem;
+    /* ── Hero ───────────────────────────────────────────────────── */
+    #hero {
+      margin-bottom: 2.5rem;
+      padding-bottom: 2.5rem;
       border-bottom: 1px solid var(--border);
+    }
+
+    .hero-label {
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
       margin-bottom: 1rem;
     }
 
-    #welcome h2 {
+    #hero h1 {
       font-family: var(--serif);
-      font-size: 2.4rem;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 1.25rem;
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 600;
       line-height: 1.15;
+      color: var(--ink);
       letter-spacing: -0.02em;
+      margin-bottom: 1.25rem;
     }
 
-    #welcome p {
-      font-family: var(--serif);
-      font-size: 1rem;
-      color: var(--text2);
-      line-height: 1.85;
-      margin-bottom: 0.75rem;
+    #hero h1 em {
+      font-style: italic;
+      color: var(--accent);
+      font-weight: 400;
     }
 
-    #welcome .sources-note {
+    #hero p {
+      font-size: 0.95rem;
+      line-height: 1.75;
+      color: var(--ink-muted);
+      max-width: 520px;
+      font-weight: 300;
+    }
+
+    .source-tags {
       display: flex;
       gap: 0.5rem;
       flex-wrap: wrap;
       margin-top: 1.25rem;
     }
 
-    #welcome .source-tag {
-      font-family: var(--mono);
-      font-size: 0.68rem;
-      letter-spacing: 0.08em;
+    .source-tag {
+      font-size: 0.65rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
       text-transform: uppercase;
-      color: var(--accent);
-      background: var(--bg2);
+      color: var(--ink-faint);
+      background: var(--bg-card);
       border: 1px solid var(--border);
       border-radius: 3px;
       padding: 0.2rem 0.5rem;
     }
 
     /* ── Conversation starters ──────────────────────────────────── */
-    #starters {
+    #suggestions {
+      margin-bottom: 2.5rem;
+    }
+
+    .suggestions-label {
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-bottom: 0.75rem;
+    }
+
+    .suggestion-pills {
       display: flex;
       flex-wrap: wrap;
       gap: 0.5rem;
-      margin-top: 1.25rem;
     }
 
-    .starter {
+    .pill {
       font-family: var(--sans);
-      font-size: 0.8rem;
-      color: var(--text2);
-      background: var(--bg2);
+      font-size: 0.85rem;
+      font-weight: 400;
+      color: var(--ink-muted);
+      background: var(--bg-card);
       border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 0.45rem 0.8rem;
+      border-radius: 2rem;
+      padding: 0.4rem 0.9rem;
       cursor: pointer;
-      text-align: left;
-      transition: color 0.15s, border-color 0.15s;
-      line-height: 1.4;
+      transition: all 0.15s ease;
+      white-space: nowrap;
     }
 
-    .starter:hover {
-      color: var(--text);
-      border-color: var(--border2);
-    }
-
-    /* ── Messages ───────────────────────────────────────────────── */
-    .msg {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-
-    .msg-role {
-      font-family: var(--mono);
-      font-size: 0.68rem;
-      font-weight: 500;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--text3);
-    }
-
-    .msg.assistant .msg-role { color: var(--accent); }
-
-    .msg-body {
-      line-height: 1.75;
-      white-space: pre-wrap;
-    }
-
-    .msg.user .msg-body {
-      font-family: var(--sans);
-      color: var(--text2);
-      font-size: 0.9rem;
-    }
-
-    .msg.assistant .msg-body {
-      font-family: var(--serif);
-      color: var(--text);
-      font-size: 0.95rem;
-    }
-
-    /* ── References ─────────────────────────────────────────────── */
-    .references {
-      margin-top: 1.5rem;
-      padding-top: 1rem;
-      border-top: 1px solid var(--border);
-    }
-
-    .references-label {
-      font-family: var(--mono);
-      font-size: 0.62rem;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--text3);
-      margin-bottom: 0.6rem;
-    }
-
-    .reference-item {
-      display: flex;
-      align-items: baseline;
-      gap: 0.5rem;
-      font-family: var(--mono);
-      font-size: 0.75rem;
-      line-height: 1.7;
-      color: var(--text2);
-    }
-
-    .ref-type {
-      font-size: 0.6rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--text3);
-      flex-shrink: 0;
-      min-width: 5.5rem;
-    }
-
-    .ref-link {
-      color: #4a7fa8;
-      text-decoration: none;
-      transition: color 0.15s;
-    }
-
-    .ref-link:hover { color: #6aabda; text-decoration: underline; }
-
-    .ref-date {
-      color: var(--text3);
-      font-size: 0.68rem;
-    }
-
-    .ref-plain {
-      color: var(--text3);
-      font-style: italic;
-    }
-
-    /* ── Confirm box ────────────────────────────────────────────── */
-    .confirm-box {
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 1rem 1.2rem;
-      margin-top: 0.5rem;
-    }
-
-    .confirm-box p {
-      font-family: var(--serif);
-      font-size: 0.9rem;
-      color: var(--text2);
-      margin-bottom: 0.75rem;
-      line-height: 1.6;
-      font-style: italic;
-    }
-
-    .confirm-box button {
-      font-family: var(--mono);
-      font-size: 0.72rem;
-      letter-spacing: 0.06em;
-      padding: 0.35rem 0.9rem;
-      border-radius: 3px;
-      border: 1px solid var(--border2);
-      background: transparent;
-      color: var(--text2);
-      cursor: pointer;
-      margin-right: 0.5rem;
-      transition: color 0.15s, border-color 0.15s;
-    }
-
-    .confirm-box button.primary {
+    .pill:hover {
+      background: var(--accent-light);
       border-color: var(--accent);
       color: var(--accent);
     }
 
-    .confirm-box button:hover { color: var(--text); border-color: var(--text); }
+    /* ── Thread ─────────────────────────────────────────────────── */
+    #thread {
+      display: flex;
+      flex-direction: column;
+      gap: 2.5rem;
+    }
 
-    /* ── Cursor ─────────────────────────────────────────────────── */
+    .msg {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      animation: fadeUp 0.25s ease;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .msg-role {
+      font-size: 0.65rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+    }
+
+    /* User messages — right-aligned bubble */
+    .msg.user { align-items: flex-end; }
+    .msg.user .msg-role { color: var(--accent); text-align: right; }
+
+    .msg.user .msg-body {
+      font-size: 0.95rem;
+      font-weight: 400;
+      color: #fff;
+      background: var(--bubble);
+      border-radius: 18px 18px 4px 18px;
+      padding: 0.75rem 1.1rem;
+      display: inline-block;
+      max-width: 88%;
+      line-height: 1.55;
+    }
+
+    /* Boris messages */
+    .msg.assistant .msg-body {
+      font-size: 1rem;
+      line-height: 1.85;
+      color: var(--ink);
+      white-space: pre-wrap;
+    }
+
+    /* ── Streaming cursor ───────────────────────────────────────── */
     .cursor {
       display: inline-block;
       width: 2px;
       height: 0.9em;
-      background: var(--accent);
+      background: var(--ink-muted);
       margin-left: 1px;
       vertical-align: text-bottom;
       animation: blink 0.9s step-end infinite;
@@ -334,66 +267,163 @@
 
     @keyframes blink { 50% { opacity: 0; } }
 
-    /* ── Input area ─────────────────────────────────────────────── */
-    #input-area {
+    /* ── References ─────────────────────────────────────────────── */
+    .references {
+      margin-top: 1.25rem;
+      padding-top: 1rem;
       border-top: 1px solid var(--border);
-      padding: 1rem 1.5rem;
-      max-width: 680px;
-      width: 100%;
-      margin: 0 auto;
-      flex-shrink: 0;
     }
 
-    #input-row {
+    .references-label {
+      font-size: 0.65rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-bottom: 0.5rem;
+    }
+
+    .source-item {
       display: flex;
-      gap: 0.5rem;
+      align-items: baseline;
+      gap: 0.75rem;
+      padding: 0.4rem 0;
+      border-bottom: 1px solid var(--border);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    .source-item:last-child { border-bottom: none; }
+    a.source-item:hover .source-title { color: var(--accent); }
+
+    .source-type {
+      font-size: 0.6rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      flex-shrink: 0;
+      min-width: 5.5rem;
+    }
+
+    .source-title {
+      font-size: 0.88rem;
+      color: var(--ink);
+      flex: 1;
+      transition: color 0.15s;
+    }
+
+    .source-item--plain .source-title {
+      color: var(--ink-muted);
+      font-style: italic;
+    }
+
+    .source-date {
+      font-size: 0.8rem;
+      color: var(--ink-faint);
+      white-space: nowrap;
+    }
+
+    /* ── Confirm box ────────────────────────────────────────────── */
+    .confirm-box {
+      margin-top: 1rem;
+      padding: 1rem 1.25rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+    }
+
+    .confirm-box p {
+      font-size: 0.88rem;
+      color: var(--ink-muted);
+      font-style: italic;
+      line-height: 1.6;
+      margin-bottom: 0.75rem;
+    }
+
+    .confirm-box button {
+      font-family: var(--sans);
+      font-size: 0.78rem;
+      font-weight: 500;
+      padding: 0.35rem 0.9rem;
+      border-radius: 4px;
+      border: 1px solid var(--border-strong);
+      background: transparent;
+      color: var(--ink-muted);
+      cursor: pointer;
+      margin-right: 0.5rem;
+      transition: all 0.15s;
+    }
+
+    .confirm-box button.primary { border-color: var(--accent); color: var(--accent); }
+    .confirm-box button:hover { background: var(--accent-light); color: var(--accent); border-color: var(--accent); }
+
+    /* ── Input bar ──────────────────────────────────────────────── */
+    .input-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+      padding: 1rem 2rem 1.5rem;
+      z-index: 10;
+    }
+
+    .input-inner {
+      max-width: 720px;
+      margin: 0 auto;
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-end;
     }
 
     #question {
       flex: 1;
-      background: var(--bg2);
-      border: 1.5px solid #4a7fa8;
-      border-radius: 4px;
-      padding: 0.65rem 0.9rem;
-      color: var(--text);
-      font-size: 0.9rem;
       font-family: var(--sans);
-      outline: none;
+      font-size: 0.9rem;
+      font-weight: 300;
+      color: var(--ink);
+      background: var(--bg-card);
+      border: 1px solid var(--border-strong);
+      border-radius: 4px;
+      padding: 0.75rem 1rem;
       resize: none;
+      outline: none;
       line-height: 1.5;
-      transition: border-color 0.15s, box-shadow 0.15s;
-      box-shadow: 0 0 0 1px rgba(74, 127, 168, 0.15);
+      min-height: 48px;
+      max-height: 140px;
+      overflow-y: auto;
+      transition: border-color 0.15s;
     }
 
-    #question:focus {
-      border-color: #6a9fc8;
-      box-shadow: 0 0 0 3px rgba(74, 127, 168, 0.2);
-    }
-
-    #question::placeholder { color: var(--text3); }
+    #question:focus { border-color: var(--accent); }
+    #question::placeholder { color: var(--ink-faint); }
 
     #send {
-      background: var(--bg2);
-      border: 1px solid var(--border);
+      font-family: var(--sans);
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--bg);
+      background: var(--ink);
+      border: none;
       border-radius: 4px;
-      color: var(--text3);
-      font-size: 1rem;
-      padding: 0 1rem;
+      padding: 0.75rem 1.25rem;
       cursor: pointer;
+      white-space: nowrap;
+      height: 48px;
       flex-shrink: 0;
-      transition: color 0.15s, border-color 0.15s;
+      transition: background 0.15s;
     }
 
-    #send:hover:not(:disabled) { color: var(--accent); border-color: var(--accent); }
-    #send:disabled { opacity: 0.3; cursor: not-allowed; }
+    #send:hover:not(:disabled) { background: var(--accent); }
+    #send:disabled { background: var(--ink-faint); cursor: not-allowed; }
 
-    #hint {
-      font-family: var(--mono);
+    .input-note {
+      max-width: 720px;
+      margin: 0.5rem auto 0;
       font-size: 0.65rem;
-      letter-spacing: 0.05em;
-      color: var(--text3);
-      opacity: 0.5;
-      margin-top: 0.5rem;
+      color: var(--ink-faint);
       text-align: center;
     }
   </style>
@@ -408,43 +438,43 @@
   </div>
 </header>
 
-<div id="chat">
-  <div id="welcome">
-    <h2>Ask me anything.</h2>
-    <p>
-      This is a personal AI built on years of Boris's thinking — direct, opinionated, and without the hype.
-      It draws from hundreds of posts, articles, private notes, and recorded conversations to answer the way Boris would.
-    </p>
-    <p>
-      Ask about UX, product design, AI, hiring, building things, or anything else he's written about.
-    </p>
-    <div class="sources-note">
+<main>
+  <div id="hero">
+    <p class="hero-label">Interactive archive</p>
+    <h1>Ask me anything about<br><em>design, product &amp; AI</em></h1>
+    <p>Answers drawn from years of Boris's thinking — posts, articles, recorded conversations, and unpublished notes. Ask about hiring, UX craft, AI in design, or product thinking.</p>
+    <div class="source-tags">
       <span class="source-tag">419 posts &amp; articles</span>
       <span class="source-tag">275 conversation excerpts</span>
       <span class="source-tag">Unpublished notes</span>
     </div>
-    <div id="starters">
-      <button class="starter">What do you think about the role of AI in design?</button>
-      <button class="starter">How has the UX designer role changed in the last few years?</button>
-      <button class="starter">What makes someone a great designer?</button>
-      <button class="starter">What's broken about how companies hire designers?</button>
-      <button class="starter">How do you approach learning something new?</button>
-      <button class="starter">What are you building right now?</button>
+  </div>
+
+  <div id="suggestions">
+    <p class="suggestions-label">Try asking</p>
+    <div class="suggestion-pills">
+      <button class="pill">What do you think about AI in design?</button>
+      <button class="pill">How has the UX designer role changed?</button>
+      <button class="pill">What makes someone a great designer?</button>
+      <button class="pill">What's broken about how companies hire designers?</button>
+      <button class="pill">How do you approach learning something new?</button>
+      <button class="pill">What are you building right now?</button>
     </div>
   </div>
-</div>
 
-<div id="input-area">
-  <div id="input-row">
-    <textarea id="question" rows="1" placeholder="What do you think about…"></textarea>
-    <button id="send">&#8593;</button>
+  <div id="thread"></div>
+</main>
+
+<div class="input-bar">
+  <div class="input-inner">
+    <textarea id="question" rows="1" placeholder="Ask something…"></textarea>
+    <button id="send">Ask →</button>
   </div>
-  <div id="hint">Enter to send &nbsp;·&nbsp; Shift+Enter for new line</div>
+  <p class="input-note">Answers based on Boris's writing. May not reflect his current views.</p>
 </div>
 
 <script>
-  const chat      = document.getElementById('chat');
-  const welcome   = document.getElementById('welcome');
+  const thread    = document.getElementById('thread');
   const input     = document.getElementById('question');
   const sendBtn   = document.getElementById('send');
   const modelSel  = document.getElementById('model-select');
@@ -452,7 +482,6 @@
   let   busy      = false;
   let   modelsData = {};
 
-  // Load available models
   fetch('/models').then(r => r.json()).then(data => {
     modelsData = data;
     modelSel.innerHTML = '';
@@ -476,44 +505,61 @@
 
   modelSel.addEventListener('change', updateCost);
 
-  // Conversation starters
-  document.querySelectorAll('.starter').forEach(btn => {
+  document.querySelectorAll('.pill').forEach(btn => {
     btn.addEventListener('click', () => {
       if (busy) return;
       input.value = btn.textContent;
-      input.style.height = 'auto';
-      input.style.height = Math.min(input.scrollHeight, 160) + 'px';
+      autosize();
       submit();
     });
   });
 
-  // Auto-resize textarea
-  input.addEventListener('input', () => {
+  function autosize() {
     input.style.height = 'auto';
-    input.style.height = Math.min(input.scrollHeight, 160) + 'px';
-  });
+    input.style.height = Math.min(input.scrollHeight, 140) + 'px';
+  }
 
-  input.addEventListener('keydown', (e) => {
+  input.addEventListener('input', autosize);
+  input.addEventListener('keydown', e => {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submit(); }
   });
-
   sendBtn.addEventListener('click', submit);
+
+  function escHtml(str) {
+    return String(str)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function setBusy() { busy = true; sendBtn.disabled = true; input.disabled = true; }
+  function setIdle()  { busy = false; sendBtn.disabled = false; input.disabled = false; input.focus(); }
+
+  function scrollBottom(smooth) {
+    window.scrollTo({ top: document.body.scrollHeight, behavior: smooth ? 'smooth' : 'instant' });
+  }
 
   function appendMsg(role, text) {
     const msg = document.createElement('div');
     msg.className = 'msg ' + role;
-    msg.innerHTML = `
-      <div class="msg-role">${role === 'user' ? 'You' : 'Boris'}</div>
-      <div class="msg-body">${escHtml(text)}</div>
-    `;
-    chat.appendChild(msg);
-    msg.scrollIntoView({ behavior: 'smooth', block: 'end' });
-    return msg.querySelector('.msg-body');
+
+    const roleEl = document.createElement('div');
+    roleEl.className = 'msg-role';
+    roleEl.textContent = role === 'user' ? 'You' : 'Boris';
+    msg.appendChild(roleEl);
+
+    const body = document.createElement('div');
+    body.className = 'msg-body';
+    if (text) body.textContent = text;
+    msg.appendChild(body);
+
+    thread.appendChild(msg);
+    scrollBottom(true);
+    return { msg, body };
   }
 
   function renderSources(sources) {
     if (!sources || sources.length === 0) return;
-    const lastMsg = chat.lastElementChild;
+    const lastMsg = thread.lastElementChild;
     if (!lastMsg || !lastMsg.classList.contains('assistant')) return;
 
     const section = document.createElement('div');
@@ -525,59 +571,50 @@
     section.appendChild(heading);
 
     sources.forEach(s => {
-      const item = document.createElement('div');
-      item.className = 'reference-item';
+      const isLink = s.type === 'post' && s.url;
+      const item = document.createElement(isLink ? 'a' : 'div');
+      item.className = 'source-item' + (isLink ? '' : ' source-item--plain');
+      if (isLink) { item.href = s.url; item.target = '_blank'; item.rel = 'noopener'; }
 
       const typeEl = document.createElement('span');
-      typeEl.className = 'ref-type';
+      typeEl.className = 'source-type';
 
-      if (s.type === 'post' && s.url) {
+      const titleEl = document.createElement('span');
+      titleEl.className = 'source-title';
+
+      if (s.type === 'post') {
         typeEl.textContent = 'Post';
-        item.appendChild(typeEl);
-
-        const link = document.createElement('a');
-        link.className = 'ref-link';
-        link.href = s.url;
-        link.target = '_blank';
-        link.rel = 'noopener';
-
         let title = s.title || '';
         if (title.length > 80) title = title.slice(0, 77) + '…';
-        link.textContent = title;
-
+        titleEl.textContent = title;
+        item.appendChild(typeEl);
+        item.appendChild(titleEl);
         if (s.date) {
           const dateEl = document.createElement('span');
-          dateEl.className = 'ref-date';
-          dateEl.textContent = ' · ' + s.date;
-          link.appendChild(dateEl);
+          dateEl.className = 'source-date';
+          dateEl.textContent = s.date;
+          item.appendChild(dateEl);
         }
-        item.appendChild(link);
-
       } else if (s.type === 'conversation') {
         typeEl.textContent = 'Conversation';
+        titleEl.textContent = 'based on conversations with designers and recruiters';
         item.appendChild(typeEl);
-        const text = document.createElement('span');
-        text.className = 'ref-plain';
-        text.textContent = 'based on conversations with designers and recruiters';
-        item.appendChild(text);
-
+        item.appendChild(titleEl);
       } else if (s.type === 'note') {
         typeEl.textContent = 'Note';
+        titleEl.textContent = 'from unpublished notes';
         item.appendChild(typeEl);
-        const text = document.createElement('span');
-        text.className = 'ref-plain';
-        text.textContent = 'from unpublished notes';
-        item.appendChild(text);
+        item.appendChild(titleEl);
       }
 
       section.appendChild(item);
     });
 
-    lastMsg.querySelector('.msg-body').appendChild(section);
+    lastMsg.appendChild(section);
   }
 
   function showConfirm(question) {
-    const lastMsg = chat.lastElementChild;
+    const lastMsg = thread.lastElementChild;
     const box = document.createElement('div');
     box.className = 'confirm-box';
     box.innerHTML = `
@@ -586,7 +623,7 @@
       <button id="confirm-no">Never mind</button>
     `;
     lastMsg.appendChild(box);
-    lastMsg.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    scrollBottom(true);
 
     document.getElementById('confirm-yes').addEventListener('click', () => {
       box.remove();
@@ -597,15 +634,6 @@
       setIdle();
     });
   }
-
-  function escHtml(str) {
-    return String(str)
-      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-  }
-
-  function setBusy() { busy = true; sendBtn.disabled = true; input.disabled = true; }
-  function setIdle()  { busy = false; sendBtn.disabled = false; input.disabled = false; input.focus(); }
 
   function submit() {
     if (busy) return;
@@ -619,7 +647,7 @@
   }
 
   function stream(question, confirmed) {
-    const bodyEl = appendMsg('assistant', '');
+    const { body: bodyEl } = appendMsg('assistant', '');
     const cursor = document.createElement('span');
     cursor.className = 'cursor';
     bodyEl.appendChild(cursor);
@@ -669,7 +697,7 @@
               }
               if (ev.token) {
                 bodyEl.insertBefore(document.createTextNode(ev.token), cursor);
-                chat.scrollTop = chat.scrollHeight;
+                scrollBottom(false);
               }
             } catch {}
           });
