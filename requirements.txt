@@ -2,3 +2,6 @@ flask
 chromadb
 sentence-transformers
 anthropic
+openai
+google-generativeai
+mistralai
