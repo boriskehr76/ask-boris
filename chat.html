@@ -4,181 +4,287 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ask Boris</title>
+
+  <!-- Chatbot favicon: speech bubble with dots -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230e0e0e'/%3E%3Cpath d='M5 7 Q5 5 7 5 L25 5 Q27 5 27 7 L27 19 Q27 21 25 21 L18 21 L15 27 L15 21 L7 21 Q5 21 5 19 Z' fill='%23d4a84b'/%3E%3Ccircle cx='11' cy='13' r='1.8' fill='%230e0e0e'/%3E%3Ccircle cx='16' cy='13' r='1.8' fill='%230e0e0e'/%3E%3Ccircle cx='21' cy='13' r='1.8' fill='%230e0e0e'/%3E%3C/svg%3E">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@300;400;500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
   <style>
+    :root {
+      --bg:      #0e0e0e;
+      --bg2:     #141414;
+      --bg3:     #1a1a1a;
+      --border:  #2a2a2a;
+      --border2: #333;
+      --text:    #e8e4dc;
+      --text2:   #b8b2aa;
+      --text3:   #a09890;
+      --accent:  #d4a84b;
+      --accent2: #e8c870;
+      --serif:   'Libre Baskerville', Georgia, serif;
+      --mono:    'DM Mono', monospace;
+      --sans:    'Instrument Sans', sans-serif;
+    }
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+    html { scroll-behavior: smooth; }
+
     body {
-      background: #0f0f0f;
-      color: #e8e8e8;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
       font-size: 15px;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      -webkit-font-smoothing: antialiased;
     }
 
+    /* Noise texture */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 1000;
+      opacity: 0.4;
+    }
+
+    /* ── Header ─────────────────────────────────────────────────── */
     header {
-      padding: 1.25rem 1.5rem;
-      border-bottom: 1px solid #222;
+      border-bottom: 1px solid var(--border);
+      padding: 0 1.5rem;
+      height: 56px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 1rem;
-      flex-wrap: wrap;
+      position: sticky;
+      top: 0;
+      background: var(--bg);
+      backdrop-filter: blur(12px);
+      z-index: 100;
+      flex-shrink: 0;
     }
 
-    header h1 {
-      font-size: 1.1rem;
-      font-weight: 600;
-      letter-spacing: 0.01em;
+    .logo {
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      color: var(--accent);
+      text-transform: uppercase;
     }
 
-    header p {
-      margin-top: 0.3rem;
-      font-size: 0.8rem;
-      color: #666;
-    }
-
+    /* ── Model selector ─────────────────────────────────────────── */
     #model-selector {
       display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 0.3rem;
+      align-items: center;
+      gap: 0.75rem;
       flex-shrink: 0;
     }
 
     #model-select {
-      background: #1a1a1a;
-      border: 1px solid #2a2a2a;
-      border-radius: 6px;
-      color: #ccc;
-      font-size: 0.8rem;
-      font-family: inherit;
-      padding: 0.35rem 0.6rem;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text2);
+      font-size: 0.75rem;
+      font-family: var(--mono);
+      padding: 0.3rem 0.6rem;
       cursor: pointer;
       outline: none;
+      transition: border-color 0.15s;
     }
 
-    #model-select:focus { border-color: #444; }
+    #model-select:focus { border-color: var(--border2); }
 
     #model-cost {
       font-size: 0.68rem;
-      color: #444;
-      text-align: right;
+      font-family: var(--mono);
+      color: var(--text3);
+      white-space: nowrap;
     }
 
+    /* ── Chat area ──────────────────────────────────────────────── */
     #chat {
       flex: 1;
       overflow-y: auto;
-      padding: 1.5rem;
+      padding: 2rem 1.5rem;
       display: flex;
       flex-direction: column;
-      gap: 1.5rem;
-      max-width: 720px;
+      gap: 2rem;
+      max-width: 680px;
       width: 100%;
       margin: 0 auto;
     }
 
+    /* ── Welcome message ────────────────────────────────────────── */
+    #welcome {
+      padding: 2rem 0 1rem;
+    }
+
+    #welcome h2 {
+      font-family: var(--serif);
+      font-size: 1.4rem;
+      font-weight: 400;
+      color: var(--text);
+      margin-bottom: 1rem;
+      line-height: 1.4;
+    }
+
+    #welcome p {
+      font-family: var(--serif);
+      font-size: 0.95rem;
+      color: var(--text2);
+      line-height: 1.8;
+      margin-bottom: 0.75rem;
+    }
+
+    #welcome .sources-note {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-top: 1.25rem;
+    }
+
+    #welcome .source-tag {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 0.2rem 0.5rem;
+    }
+
+    #welcome hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 1.5rem 0 0;
+    }
+
+    /* ── Messages ───────────────────────────────────────────────── */
     .msg {
       display: flex;
       flex-direction: column;
-      gap: 0.4rem;
+      gap: 0.5rem;
     }
 
     .msg-role {
-      font-size: 0.7rem;
-      font-weight: 600;
-      letter-spacing: 0.08em;
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: #555;
+      color: var(--text3);
     }
 
-    .msg.user .msg-role { color: #888; }
-    .msg.assistant .msg-role { color: #4a9eff; }
+    .msg.assistant .msg-role { color: var(--accent); }
 
     .msg-body {
-      line-height: 1.65;
-      color: #e0e0e0;
+      line-height: 1.75;
       white-space: pre-wrap;
     }
 
     .msg.user .msg-body {
-      color: #aaa;
+      font-family: var(--sans);
+      color: var(--text2);
+      font-size: 0.9rem;
     }
 
+    .msg.assistant .msg-body {
+      font-family: var(--serif);
+      color: var(--text);
+      font-size: 0.95rem;
+    }
+
+    /* ── Sources ────────────────────────────────────────────────── */
     .sources {
       display: flex;
       flex-wrap: wrap;
       gap: 0.4rem;
-      margin-top: 0.6rem;
+      margin-top: 0.75rem;
     }
 
     .source-chip {
       display: inline-block;
-      font-size: 0.72rem;
-      padding: 0.25rem 0.6rem;
-      border-radius: 4px;
-      background: #1a1a1a;
-      border: 1px solid #2a2a2a;
-      color: #888;
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.04em;
+      padding: 0.2rem 0.55rem;
+      border-radius: 3px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      color: var(--text3);
       text-decoration: none;
       transition: color 0.15s, border-color 0.15s;
     }
 
     a.source-chip:hover {
-      color: #4a9eff;
-      border-color: #4a9eff;
+      color: var(--accent);
+      border-color: var(--accent);
     }
 
-    .source-chip.label {
-      font-style: italic;
-      cursor: default;
-    }
+    .source-chip.label { cursor: default; font-style: italic; }
 
     .source-chip .source-date {
-      color: #555;
+      color: var(--text3);
+      opacity: 0.6;
       margin-left: 0.3rem;
     }
 
+    /* ── Confirm box ────────────────────────────────────────────── */
     .confirm-box {
-      background: #1a1a1a;
-      border: 1px solid #333;
-      border-radius: 8px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
       padding: 1rem 1.2rem;
       margin-top: 0.5rem;
     }
 
     .confirm-box p {
-      font-size: 0.85rem;
-      color: #888;
+      font-family: var(--serif);
+      font-size: 0.9rem;
+      color: var(--text2);
       margin-bottom: 0.75rem;
-      line-height: 1.5;
+      line-height: 1.6;
+      font-style: italic;
     }
 
     .confirm-box button {
-      font-size: 0.8rem;
-      padding: 0.4rem 1rem;
-      border-radius: 4px;
-      border: 1px solid #333;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      padding: 0.35rem 0.9rem;
+      border-radius: 3px;
+      border: 1px solid var(--border2);
       background: transparent;
-      color: #aaa;
+      color: var(--text2);
       cursor: pointer;
       margin-right: 0.5rem;
       transition: color 0.15s, border-color 0.15s;
     }
 
     .confirm-box button.primary {
-      border-color: #4a9eff;
-      color: #4a9eff;
+      border-color: var(--accent);
+      color: var(--accent);
     }
 
-    .confirm-box button:hover { color: #fff; border-color: #fff; }
+    .confirm-box button:hover { color: var(--text); border-color: var(--text); }
 
+    /* ── Cursor ─────────────────────────────────────────────────── */
     .cursor {
       display: inline-block;
       width: 2px;
-      height: 1em;
-      background: #4a9eff;
+      height: 0.9em;
+      background: var(--accent);
       margin-left: 1px;
       vertical-align: text-bottom;
       animation: blink 0.9s step-end infinite;
@@ -186,12 +292,14 @@
 
     @keyframes blink { 50% { opacity: 0; } }
 
+    /* ── Input area ─────────────────────────────────────────────── */
     #input-area {
-      border-top: 1px solid #222;
+      border-top: 1px solid var(--border);
       padding: 1rem 1.5rem;
-      max-width: 720px;
+      max-width: 680px;
       width: 100%;
       margin: 0 auto;
+      flex-shrink: 0;
     }
 
     #input-row {
@@ -201,40 +309,43 @@
 
     #question {
       flex: 1;
-      background: #1a1a1a;
-      border: 1px solid #2a2a2a;
-      border-radius: 6px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
       padding: 0.65rem 0.9rem;
-      color: #e0e0e0;
+      color: var(--text);
       font-size: 0.9rem;
-      font-family: inherit;
+      font-family: var(--sans);
       outline: none;
       resize: none;
       line-height: 1.5;
       transition: border-color 0.15s;
     }
 
-    #question:focus { border-color: #444; }
-    #question::placeholder { color: #444; }
+    #question:focus { border-color: var(--border2); }
+    #question::placeholder { color: var(--text3); }
 
     #send {
-      background: #1a1a1a;
-      border: 1px solid #2a2a2a;
-      border-radius: 6px;
-      color: #666;
-      font-size: 1.1rem;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text3);
+      font-size: 1rem;
       padding: 0 1rem;
       cursor: pointer;
-      transition: color 0.15s, border-color 0.15s;
       flex-shrink: 0;
+      transition: color 0.15s, border-color 0.15s;
     }
 
-    #send:hover:not(:disabled) { color: #4a9eff; border-color: #4a9eff; }
+    #send:hover:not(:disabled) { color: var(--accent); border-color: var(--accent); }
     #send:disabled { opacity: 0.3; cursor: not-allowed; }
 
     #hint {
-      font-size: 0.7rem;
-      color: #333;
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.05em;
+      color: var(--text3);
+      opacity: 0.5;
       margin-top: 0.5rem;
       text-align: center;
     }
@@ -243,28 +354,43 @@
 <body>
 
 <header>
-  <div>
-    <h1>Ask Boris</h1>
-    <p>Ask me anything about design, product, AI, and hiring.</p>
-  </div>
+  <span class="logo">Ask Boris</span>
   <div id="model-selector">
     <select id="model-select"><option>Loading…</option></select>
     <div id="model-cost"></div>
   </div>
 </header>
 
-<div id="chat"></div>
+<div id="chat">
+  <div id="welcome">
+    <h2>Ask me anything.</h2>
+    <p>
+      This is a personal AI built on years of Boris's thinking — direct, opinionated, and without the hype.
+      It draws from hundreds of posts, articles, private notes, and recorded conversations to answer the way Boris would.
+    </p>
+    <p>
+      Ask about UX, product design, AI, hiring, building things, or anything else he's written about.
+    </p>
+    <div class="sources-note">
+      <span class="source-tag">419 posts &amp; articles</span>
+      <span class="source-tag">275 conversation excerpts</span>
+      <span class="source-tag">Unpublished notes</span>
+    </div>
+    <hr>
+  </div>
+</div>
 
 <div id="input-area">
   <div id="input-row">
     <textarea id="question" rows="1" placeholder="What do you think about…"></textarea>
     <button id="send">&#8593;</button>
   </div>
-  <div id="hint">Enter to send · Shift+Enter for new line</div>
+  <div id="hint">Enter to send &nbsp;·&nbsp; Shift+Enter for new line</div>
 </div>
 
 <script>
   const chat      = document.getElementById('chat');
+  const welcome   = document.getElementById('welcome');
   const input     = document.getElementById('question');
   const sendBtn   = document.getElementById('send');
   const modelSel  = document.getElementById('model-select');
@@ -272,7 +398,7 @@
   let   busy      = false;
   let   modelsData = {};
 
-  // Load available models from server
+  // Load available models
   fetch('/models').then(r => r.json()).then(data => {
     modelsData = data;
     modelSel.innerHTML = '';
@@ -291,7 +417,7 @@
     const info = modelsData[id];
     if (!info) return;
     modelCost.textContent =
-      `in $${info.input_cost.toFixed(2)} · out $${info.output_cost.toFixed(2)} per 1M tokens`;
+      `in $${info.input_cost.toFixed(2)} · out $${info.output_cost.toFixed(2)} /1M`;
   }
 
   modelSel.addEventListener('change', updateCost);
@@ -303,15 +429,13 @@
   });
 
   input.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      submit();
-    }
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submit(); }
   });
 
   sendBtn.addEventListener('click', submit);
 
   function appendMsg(role, text) {
+    if (welcome) welcome.style.display = 'none';
     const msg = document.createElement('div');
     msg.className = 'msg ' + role;
     msg.innerHTML = `
@@ -326,7 +450,7 @@
   function renderSources(sources) {
     if (!sources || sources.length === 0) return;
     const lastMsg = chat.lastElementChild;
-    if (!lastMsg) return;
+    if (!lastMsg || !lastMsg.classList.contains('assistant')) return;
 
     const div = document.createElement('div');
     div.className = 'sources';
@@ -334,18 +458,14 @@
     sources.forEach(s => {
       const chip = document.createElement(s.url ? 'a' : 'span');
       chip.className = 'source-chip' + (s.url ? '' : ' label');
-      if (s.url) {
-        chip.href = s.url;
-        chip.target = '_blank';
-        chip.rel = 'noopener';
-      }
+      if (s.url) { chip.href = s.url; chip.target = '_blank'; chip.rel = 'noopener'; }
       let label = escHtml(s.title);
       if (s.date) label += `<span class="source-date">${escHtml(s.date)}</span>`;
       chip.innerHTML = label;
       div.appendChild(chip);
     });
 
-    lastMsg.appendChild(div);
+    lastMsg.querySelector('.msg-body').appendChild(div);
   }
 
   function showConfirm(question) {
@@ -372,24 +492,12 @@
 
   function escHtml(str) {
     return String(str)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
-  function setBusy() {
-    busy = true;
-    sendBtn.disabled = true;
-    input.disabled = true;
-  }
-
-  function setIdle() {
-    busy = false;
-    sendBtn.disabled = false;
-    input.disabled = false;
-    input.focus();
-  }
+  function setBusy() { busy = true; sendBtn.disabled = true; input.disabled = true; }
+  function setIdle()  { busy = false; sendBtn.disabled = false; input.disabled = false; input.focus(); }
 
   function submit() {
     if (busy) return;
@@ -408,7 +516,6 @@
     cursor.className = 'cursor';
     bodyEl.appendChild(cursor);
 
-    let text = '';
     let sourcesRendered = false;
 
     fetch('/ask', {
@@ -416,7 +523,6 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ question, confirmed, model: modelSel.value })
     }).then(res => {
-      // Handle non-streaming JSON responses (confirm_needed, errors)
       const ct = res.headers.get('content-type') || '';
       if (!ct.includes('text/event-stream')) {
         return res.json().then(data => {
@@ -425,7 +531,7 @@
             bodyEl.textContent = '';
             showConfirm(question);
           } else {
-            bodyEl.textContent = 'Something went wrong.';
+            bodyEl.textContent = data.error || 'Something went wrong.';
             setIdle();
           }
         });
@@ -437,12 +543,7 @@
 
       function read() {
         reader.read().then(({ done, value }) => {
-          if (done) {
-            cursor.remove();
-            if (!sourcesRendered) renderSources([]);
-            setIdle();
-            return;
-          }
+          if (done) { cursor.remove(); setIdle(); return; }
 
           buf += decoder.decode(value, { stream: true });
           const lines = buf.split('\n');
@@ -451,22 +552,15 @@
           lines.forEach(line => {
             if (!line.startsWith('data: ')) return;
             const raw = line.slice(6).trim();
-            if (raw === '[DONE]') {
-              cursor.remove();
-              setIdle();
-              return;
-            }
+            if (raw === '[DONE]') { cursor.remove(); setIdle(); return; }
             try {
               const ev = JSON.parse(raw);
               if (ev.sources !== undefined && !sourcesRendered) {
                 sourcesRendered = true;
                 renderSources(ev.sources);
               }
-              if (ev.token !== undefined) {
-                text += ev.token;
-                bodyEl.childNodes[0]
-                  ? bodyEl.insertBefore(document.createTextNode(ev.token), cursor)
-                  : bodyEl.prepend(document.createTextNode(ev.token));
+              if (ev.token) {
+                bodyEl.insertBefore(document.createTextNode(ev.token), cursor);
                 chat.scrollTop = chat.scrollHeight;
               }
             } catch {}
