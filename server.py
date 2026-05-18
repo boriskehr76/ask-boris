@@ -42,9 +42,9 @@ def get_context_and_sources(question):
     distances = results["distances"][0]
 
     avg_distance = sum(distances) / len(distances)
-    if avg_distance < 0.5:
+    if avg_distance < 1.0:
         confidence = "high"
-    elif avg_distance < 0.8:
+    elif avg_distance < 1.5:
         confidence = "medium"
     else:
         confidence = "low"
@@ -111,7 +111,7 @@ def ask():
         return jsonify({"confirm_needed": True})
 
     # Stream the response
-    user_prompt = f"""Retrieval confidence: {"low" if confirmed else confidence}
+    user_prompt = f"""Retrieval confidence: {"medium" if confirmed else confidence}
 Context from Boris's writing:
 {context}
 
