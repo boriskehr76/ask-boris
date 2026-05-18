@@ -5,6 +5,8 @@ import anthropic
 import os
 import json
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 app = Flask(__name__)
 
 print("Loading resources...")
@@ -84,13 +86,13 @@ def get_context_and_sources(question):
 
 
 @app.route("/")
-def index():
-    return send_from_directory(".", "index.html")
-
-
-@app.route("/chat")
 def chat():
-    return send_from_directory(".", "chat.html")
+    return send_from_directory(BASE_DIR, "chat.html")
+
+
+@app.route("/report")
+def report():
+    return send_from_directory(BASE_DIR, "index.html")
 
 
 @app.route("/ask", methods=["POST"])
