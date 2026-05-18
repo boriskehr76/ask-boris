@@ -87,9 +87,12 @@ if os.environ.get("GOOGLE_API_KEY"):
 
 mistral_client = None
 if os.environ.get("MISTRAL_API_KEY"):
-    from mistralai import Mistral
-    mistral_client = Mistral(api_key=os.environ.get("MISTRAL_API_KEY"))
-    print("Mistral client ready.")
+    try:
+        from mistralai import Mistral
+        mistral_client = Mistral(api_key=os.environ.get("MISTRAL_API_KEY"))
+        print("Mistral client ready.")
+    except Exception as e:
+        print(f"Mistral unavailable: {e}")
 
 print("Ready.")
 
