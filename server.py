@@ -10,7 +10,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 app = Flask(__name__)
 
 print("Loading resources...")
-chroma_client = chromadb.PersistentClient(path="./chroma_db")
+chroma_client = chromadb.PersistentClient(path=os.path.join(BASE_DIR, "chroma_db"))
 collection = chroma_client.get_collection("boris")
 model = SentenceTransformer("all-MiniLM-L6-v2")
 claude = anthropic.Anthropic()
