@@ -165,6 +165,7 @@ def get_context_and_sources(question):
     sources = []
     seen_source_types = set()
     seen_urls = set()
+    seen_titles = set()
 
     for doc, meta in zip(docs, metas):
         context += f"\n---\n{doc}\n"
@@ -172,12 +173,13 @@ def get_context_and_sources(question):
 
         if meta.get("url"):
             url = meta["url"]
-            if url in seen_urls:
-                continue
-            seen_urls.add(url)
             title = meta.get("title", "").strip()
             if not title:
                 title = doc.split(".")[0].strip()[:80]
+            if url in seen_urls or title in seen_titles:
+                continue
+            seen_urls.add(url)
+            seen_titles.add(title)
             date = meta.get("date", "")[:10]
             sources.append({
                 "title": title,

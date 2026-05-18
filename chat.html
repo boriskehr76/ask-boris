@@ -455,20 +455,36 @@
       text-align: center;
     }
 
-    /* ── Clear button ───────────────────────────────────────────── */
+    /* ── New chat button ────────────────────────────────────────── */
     #clear-btn {
       font-family: var(--sans);
-      font-size: 0.7rem;
-      color: var(--ink-faint);
-      background: none;
-      border: none;
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--ink-muted);
+      background: var(--bg-card);
+      border: 1px solid var(--border-strong);
+      border-radius: 4px;
       cursor: pointer;
-      padding: 0.2rem 0.4rem;
+      padding: 0.3rem 0.75rem;
       flex-shrink: 0;
-      transition: color 0.15s;
+      transition: all 0.15s;
     }
 
-    #clear-btn:hover { color: var(--accent); }
+    #clear-btn:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    /* ── Model label (replaces visible selector) ─────────────────── */
+    #model-label {
+      font-size: 0.7rem;
+      color: var(--ink-faint);
+      white-space: nowrap;
+    }
+
+    #model-select { display: none; }
+    #model-cost   { display: none; }
   </style>
 </head>
 <body>
@@ -476,7 +492,8 @@
 <header>
   <span class="logo">Ask Boris</span>
   <div id="model-selector">
-    <button id="clear-btn">Clear</button>
+    <button id="clear-btn">+ New chat</button>
+    <span id="model-label">Claude Haiku 4.5</span>
     <select id="model-select"><option>Loading…</option></select>
     <div id="model-cost"></div>
   </div>
@@ -527,6 +544,9 @@
   let   modelsData = {};
   const shownRefs = new Set();  // tracks URLs + types already rendered across all messages
 
+  const modelLabel = document.getElementById('model-label');
+  const DEFAULT_MODEL = 'claude-haiku-4-5-20251001';
+
   fetch('/models').then(r => r.json()).then(data => {
     modelsData = data;
     modelSel.innerHTML = '';
@@ -535,20 +555,15 @@
       const opt = document.createElement('option');
       opt.value = id;
       opt.textContent = info.name;
+      if (id === DEFAULT_MODEL) opt.selected = true;
       modelSel.appendChild(opt);
     });
-    updateCost();
   });
 
-  function updateCost() {
-    const id = modelSel.value;
-    const info = modelsData[id];
-    if (!info) return;
-    modelCost.textContent =
-      `in $${info.input_cost.toFixed(2)} · out $${info.output_cost.toFixed(2)} /1M`;
-  }
-
-  modelSel.addEventListener('change', updateCost);
+  modelSel.addEventListener('change', () => {
+    const info = modelsData[modelSel.value];
+    if (info) modelLabel.textContent = info.name;
+  });
 
   document.querySelectorAll('.pill').forEach(btn => {
     btn.addEventListener('click', () => {
