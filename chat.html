@@ -170,6 +170,33 @@
       margin: 1.5rem 0 0;
     }
 
+    /* ── Conversation starters ──────────────────────────────────── */
+    #starters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1.25rem;
+    }
+
+    .starter {
+      font-family: var(--sans);
+      font-size: 0.8rem;
+      color: var(--text2);
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.45rem 0.8rem;
+      cursor: pointer;
+      text-align: left;
+      transition: color 0.15s, border-color 0.15s;
+      line-height: 1.4;
+    }
+
+    .starter:hover {
+      color: var(--text);
+      border-color: var(--border2);
+    }
+
     /* ── Messages ───────────────────────────────────────────────── */
     .msg {
       display: flex;
@@ -310,7 +337,7 @@
     #question {
       flex: 1;
       background: var(--bg2);
-      border: 1px solid var(--border);
+      border: 1.5px solid #4a7fa8;
       border-radius: 4px;
       padding: 0.65rem 0.9rem;
       color: var(--text);
@@ -319,10 +346,15 @@
       outline: none;
       resize: none;
       line-height: 1.5;
-      transition: border-color 0.15s;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      box-shadow: 0 0 0 1px rgba(74, 127, 168, 0.15);
     }
 
-    #question:focus { border-color: var(--border2); }
+    #question:focus {
+      border-color: #6a9fc8;
+      box-shadow: 0 0 0 3px rgba(74, 127, 168, 0.2);
+    }
+
     #question::placeholder { color: var(--text3); }
 
     #send {
@@ -377,6 +409,14 @@
       <span class="source-tag">Unpublished notes</span>
     </div>
     <hr>
+    <div id="starters">
+      <button class="starter">What do you think about the role of AI in design?</button>
+      <button class="starter">How has the UX designer role changed in the last few years?</button>
+      <button class="starter">What makes someone a great designer?</button>
+      <button class="starter">What's broken about how companies hire designers?</button>
+      <button class="starter">How do you approach learning something new?</button>
+      <button class="starter">What are you building right now?</button>
+    </div>
   </div>
 </div>
 
@@ -421,6 +461,17 @@
   }
 
   modelSel.addEventListener('change', updateCost);
+
+  // Conversation starters
+  document.querySelectorAll('.starter').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (busy) return;
+      input.value = btn.textContent;
+      input.style.height = 'auto';
+      input.style.height = Math.min(input.scrollHeight, 160) + 'px';
+      submit();
+    });
+  });
 
   // Auto-resize textarea
   input.addEventListener('input', () => {
