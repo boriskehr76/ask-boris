@@ -1,13 +1,26 @@
 from flask import Flask, request, jsonify, send_from_directory, Response, stream_with_context
+from flask_cors import CORS
 import chromadb
 from sentence_transformers import SentenceTransformer
 import anthropic
 import os
 import json
+import re
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 app = Flask(__name__)
+
+# Portfolio origins allowed to call /ask and /models from the browser.
+# Includes the Lovable preview domains used while editing boriskehr.com.
+ALLOWED_ORIGINS = [
+    "https://boriskehr.com",
+    "https://www.boriskehr.com",
+    "http://localhost:8080",
+    re.compile(r"^https://.*\.lovable\.app$"),
+    re.compile(r"^https://.*\.lovableproject\.com$"),
+]
+CORS(app, resources={r"/ask": {"origins": ALLOWED_ORIGINS}, r"/models": {"origins": ALLOWED_ORIGINS}})
 
 # ── Model registry ─────────────────────────────────────────────────────────
 # input_cost / output_cost are USD per 1M tokens
