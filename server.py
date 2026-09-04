@@ -16,9 +16,13 @@ app = Flask(__name__)
 ALLOWED_ORIGINS = [
     "https://boriskehr.com",
     "https://www.boriskehr.com",
+    "https://boriskehr.se",
+    "https://www.boriskehr.se",
     "http://localhost:8080",
+    "http://localhost:5173",
     re.compile(r"^https://.*\.lovable\.app$"),
     re.compile(r"^https://.*\.lovableproject\.com$"),
+    re.compile(r"^https://.*\.pages\.dev$"),
 ]
 CORS(app, resources={r"/ask": {"origins": ALLOWED_ORIGINS}, r"/models": {"origins": ALLOWED_ORIGINS}})
 
@@ -279,8 +283,10 @@ Context from Boris's writing:
 
 Question: {question}"""
 
+    reported_confidence = "medium" if confirmed else confidence
+
     def generate():
-        yield f"data: {json.dumps({'sources': sources[:3]})}\n\n"
+        yield f"data: {json.dumps({'sources': sources[:3], 'confidence': reported_confidence})}\n\n"
         try:
             for token in stream_tokens(provider, model_id, user_prompt):
                 yield f"data: {json.dumps({'token': token})}\n\n"
