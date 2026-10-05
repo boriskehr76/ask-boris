@@ -1,0 +1,32 @@
+name = "ask-boris"
+main = "src/index.js"
+compatibility_date = "2026-06-01"
+
+# Chat page (/) and Ghosted report (/report), copied in by `npm run build`.
+[assets]
+directory = "./public"
+binding = "ASSETS"
+
+# Workers AI for bge-m3 embeddings (free tier: 10,000 neurons/day).
+[ai]
+binding = "AI"
+
+# Vector index, created once with:
+#   npx wrangler vectorize create ask-boris --dimensions=1024 --metric=cosine
+[[vectorize]]
+binding = "VECTORIZE"
+index_name = "ask-boris"
+
+[vars]
+# Average top-10 cosine similarity thresholds.
+# PLACEHOLDERS: run scripts/calibrate.py after ingesting and paste its numbers here.
+CONF_HIGH = "0.55"
+CONF_MEDIUM = "0.45"
+
+# Secrets (never put these in this file):
+#   npx wrangler secret put ANTHROPIC_API_KEY
+#   npx wrangler secret put OPENAI_API_KEY    (optional)
+#   npx wrangler secret put MISTRAL_API_KEY   (optional)
+
+# Custom domain, once boriskehr.se is on Cloudflare DNS:
+# routes = [{ pattern = "ask.boriskehr.se", custom_domain = true }]

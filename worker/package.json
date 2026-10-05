@@ -1,0 +1,14 @@
+{
+  "name": "ask-boris-worker",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "mkdir -p public/report && cp ../chat.html public/index.html && cp ../index.html public/report/index.html",
+    "dev": "npm run build && wrangler dev --remote",
+    "deploy": "npm run build && wrangler deploy",
+    "test": "node test/worker.test.js"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}
