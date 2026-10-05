@@ -19,9 +19,9 @@ index_name = "ask-boris"
 
 [vars]
 # Average top-10 cosine similarity thresholds.
-# PLACEHOLDERS: run scripts/calibrate.py after ingesting and paste its numbers here.
-CONF_HIGH = "0.55"
-CONF_MEDIUM = "0.45"
+# Calibrated with scripts/calibrate.py on 2026-10-05 (bge-m3). Re-run after big corpus changes.
+CONF_HIGH = "0.619"
+CONF_MEDIUM = "0.495"
 
 # Secrets (never put these in this file):
 #   npx wrangler secret put ANTHROPIC_API_KEY
