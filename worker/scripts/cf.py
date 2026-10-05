@@ -13,8 +13,13 @@ import urllib.request
 EMBED_MODEL = "@cf/baai/bge-m3"
 INDEX = os.environ.get("VECTORIZE_INDEX", "ask-boris")
 
-ACCOUNT = os.environ.get("CLOUDFLARE_ACCOUNT_ID")
-TOKEN = os.environ.get("CLOUDFLARE_API_TOKEN")
+def _clean(value):
+    # Strip whitespace and stray quotes, including curly quotes macOS may insert.
+    return (value or "").strip().strip("\"'“”‘’").strip()
+
+
+ACCOUNT = _clean(os.environ.get("CLOUDFLARE_ACCOUNT_ID"))
+TOKEN = _clean(os.environ.get("CLOUDFLARE_API_TOKEN"))
 if not ACCOUNT or not TOKEN:
     sys.exit("Set CLOUDFLARE_ACCOUNT_ID and CLOUDFLARE_API_TOKEN first.")
 
